@@ -1,0 +1,9 @@
+[workspace]
+members = ["backend"]
+
+[package]
+name = "plm"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
