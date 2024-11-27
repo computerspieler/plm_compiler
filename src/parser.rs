@@ -1060,10 +1060,11 @@ impl Parser {
 	}
 
 	fn parse_statement_block(&mut self, expected_identifier: Option<String>) -> Option<Statement> {
+		let mut last_label = None;
 		let mut statements: Vec<Statement> = vec![];
 
 		loop {
-			match self.parse_statement(None) {
+			match self.parse_statement(last_label) {
 			Some(Statement::EndOfStatement(x)) => {
 				match (x, expected_identifier) {
 				(None, Some(_)) => { parsing_error!("Missing identifier") }
@@ -1086,7 +1087,14 @@ impl Parser {
 
 				return Some(Statement::Block(statements));
 			}
-			Some(stmt) => { statements.push(stmt); }
+			Some(Statement::Label(lbl)) => {
+				last_label = Some(lbl.clone());
+				statements.push(Statement::Label(lbl));
+			}
+			Some(stmt) => {
+				last_label = None;
+				statements.push(stmt);
+			}
 			None => { return None; }
 			}
 		}

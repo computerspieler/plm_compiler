@@ -1041,6 +1041,25 @@ fn test_valid_procedure3() {
 }
 
 #[test]
+fn test_valid_procedure4() {
+	compare_ast!("f: PROCEDURE; f2: PROCEDURE; END f2; END f;", Some(vec![
+		Statement::Label("F".to_string()),
+		Statement::Procedure(
+			vec![],
+			Type::Void,
+			Box::new(Statement::Block(vec![
+				Statement::Label("F2".to_string()),
+				Statement::Procedure(
+					vec![],
+					Type::Void,
+					Box::new(Statement::Block(vec![]))
+				)
+			]))
+		)
+	]))
+}
+
+#[test]
 fn test_valid_return0() {
 	compare_ast!("RETURN;", Some(vec![
 		Statement::Return(None)
