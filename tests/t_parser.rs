@@ -12,12 +12,20 @@ macro_rules! compare_ast {
 			assert!(!parser.reached_eos());
 		}
 		Some(x) => {
-			for stmt in x {
+			let n = x.len();
+			for i in 0 .. n {
 				match parser.next() {
-				None => { assert!(false, "Ended too early"); }
-				Some(p) => { assert_eq!(p, stmt); }
+				None => {
+					println!("Statement(s) left to parse:");
+					for j in i .. n {
+						dbg!(&x[j]);
+					}
+					assert!(false);
+				}
+				Some(p) => { assert_eq!(p, x[i]); }
 				}
 			}
+			assert!(parser.reached_eos());
 		}
 		}
 	}};
@@ -954,30 +962,18 @@ fn test_valid_operation6() {
 #[test]
 fn test_valid_label0() {
 	compare_ast!("lbl: $Q = 1;", Some(vec![
-		Statement::Label("LBL".to_string(), Box::new(
-			Statement::Expression(Expression::VariableAssignment(
-				Variable::Variable("Q".to_string()), 
-				Box::new(Expression::Constant(1))
-			))
+		Statement::Label("LBL".to_string()),
+		Statement::Expression(Expression::VariableAssignment(
+			Variable::Variable("Q".to_string()), 
+			Box::new(Expression::Constant(1))
 		))
 	]))
 }
 
 #[test]
 fn test_valid_label1() {
-	compare_ast!("3200h:", Some(vec![
-		Statement::ProgramBasis(0x3200)
-	]))
-}
-
-#[test]
-fn test_valid_label2() {
-	compare_ast!("3200h: $Q = 1;", Some(vec![
-		Statement::ProgramBasis(0x3200),
-		Statement::Expression(Expression::VariableAssignment(
-			Variable::Variable("Q".to_string()), 
-			Box::new(Expression::Constant(1))
-		))
+	compare_ast!("lbl:", Some(vec![
+		Statement::Label("LBL".to_string())
 	]))
 }
 
@@ -999,12 +995,11 @@ fn test_invalid_label2() {
 #[test]
 fn test_valid_procedure0() {
 	compare_ast!("f: PROCEDURE; END f;", Some(vec![
-		Statement::Label("F".to_string(),
-			Box::new(Statement::Procedure(
-				vec![],
-				Type::Void,
-				Box::new(Statement::Block(vec![]))
-			))
+		Statement::Label("F".to_string()),
+		Statement::Procedure(
+			vec![],
+			Type::Void,
+			Box::new(Statement::Block(vec![]))
 		)
 	]))
 }
@@ -1012,12 +1007,11 @@ fn test_valid_procedure0() {
 #[test]
 fn test_valid_procedure1() {
 	compare_ast!("f: PROCEDURE(x, y); END f;", Some(vec![
-		Statement::Label("F".to_string(),
-			Box::new(Statement::Procedure(
-				vec!["X".to_string(), "Y".to_string()],
-				Type::Void,
-				Box::new(Statement::Block(vec![]))
-			))
+		Statement::Label("F".to_string()),
+		Statement::Procedure(
+			vec!["X".to_string(), "Y".to_string()],
+			Type::Void,
+			Box::new(Statement::Block(vec![]))
 		)
 	]))
 }
@@ -1025,12 +1019,11 @@ fn test_valid_procedure1() {
 #[test]
 fn test_valid_procedure2() {
 	compare_ast!("f: PROCEDURE(x, y) BYTE; END f;", Some(vec![
-		Statement::Label("F".to_string(),
-			Box::new(Statement::Procedure(
-				vec!["X".to_string(), "Y".to_string()],
-				Type::Byte(1),
-				Box::new(Statement::Block(vec![]))
-			))
+		Statement::Label("F".to_string()),
+		Statement::Procedure(
+			vec!["X".to_string(), "Y".to_string()],
+			Type::Byte(1),
+			Box::new(Statement::Block(vec![]))
 		)
 	]))
 }
@@ -1038,12 +1031,11 @@ fn test_valid_procedure2() {
 #[test]
 fn test_valid_procedure3() {
 	compare_ast!("f: PROCEDURE BYTE; END f;", Some(vec![
-		Statement::Label("F".to_string(),
-			Box::new(Statement::Procedure(
-				vec![],
-				Type::Byte(1),
-				Box::new(Statement::Block(vec![]))
-			))
+		Statement::Label("F".to_string()),
+		Statement::Procedure(
+			vec![],
+			Type::Byte(1),
+			Box::new(Statement::Block(vec![]))
 		)
 	]))
 }

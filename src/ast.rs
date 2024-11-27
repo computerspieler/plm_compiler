@@ -51,9 +51,12 @@ pub enum Expression {
 	 * Example: arr(5), f(6).
 	 *  The first one is the fifth element of the array,
 	 *  and the seconde one is a call to a function.
-	 * So for now, we'll act like they're the same.
+	 * So for the parse, we'll act like they're the same.
+	 * Therefore, FunctionCallOrArrayElement statement MUST
+	 * ONLY be created by the PARSER
 	 */
 	FunctionCallOrArrayElement(String, Box<Expression>),
+	ArrayElement(String, Box<Expression>),
 	FunctionCall(String, Vec<Expression>),
 	Constant(i32),
 	VariableAssignment(Variable, Box<Expression>),
@@ -86,9 +89,8 @@ pub enum Statement {
 	FunctionCall(String, Vec<Expression>),
 	Return(Option<Expression>),
 	Expression(Expression),
-	Label(String, Box<Statement>),
+	Label(String),
 	Procedure(Vec<String>, Type, Box<Statement>),
-	ProgramBasis(i32),
 	EndOfFile,
 	NoOperation
 }

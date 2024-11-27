@@ -3,12 +3,13 @@ use crate::lexer::{Lexer, Position, Token};
 
 pub struct Parser {
 	lexer: Lexer,
+	last_label: Option<String>,
 	encountered_error: bool
 }
 
 macro_rules! parsing_error {
 	($pos: ident, $msg: tt) => { {
-		println!("TRACE: file: {}, line: {}", file!(), line!());
+		dbg!("TRACE: file: {}, line: {}", file!(), line!());
 		println!("Parsing error at {}: {}", $pos, $msg);
 		return None;
 	} };
@@ -76,6 +77,7 @@ impl Parser {
 	pub fn new(lex: Lexer) -> Parser {
 		Parser {
 			lexer: lex,
+			last_label: None,
 			encountered_error: false
 		}
 	}
@@ -454,7 +456,7 @@ impl Parser {
 		)
 	}
 
-	fn parse_statement(&mut self, label: Option<&String>) -> Option<Statement> {
+	fn parse_statement(&mut self, label: Option<String>) -> Option<Statement> {
 		let tok = self.lexer.peek();
 		if tok.is_none() {
 			return None;
@@ -561,10 +563,12 @@ impl Parser {
 			let (tok, pos) = tok.unwrap();
 
 			match tok.clone() {
+			/* Block */
 			Token::SemiColon => {
 				self.lexer.next();
 				self.parse_statement_block(None)
 			}
+			/* While loop */
 			Token::Keyword("WHILE") => {
 				self.lexer.next();
 				let condition = self.parse_expression();
@@ -581,6 +585,7 @@ impl Parser {
 				}
 				}
 			}
+			/* Do case block */
 			Token::Keyword("CASE") => {
 				self.lexer.next();
 				let condition = self.parse_expression();
@@ -600,6 +605,7 @@ impl Parser {
 				}
 				}
 			}
+			/* For loop */
 			Token::Identifier(var) => {
 				self.lexer.next();
 				check_token!(self.lexer.next(), Token::Equal);
@@ -831,8 +837,8 @@ impl Parser {
 
 			match self.parse_identifier_block(false) {
 			Some(names) => {
-				variables = names.iter()
-					.map(|name| Variable::Variable(name.clone()))
+				variables = names.into_iter()
+					.map(|name| Variable::Variable(name))
 					.collect();
 			}
 			None => {
@@ -871,8 +877,8 @@ impl Parser {
 				check_token!(self.lexer.next(), Token::SemiColon);
 	
 				let mut output_expr = e.unwrap();
-				for v in variables.iter().rev() {
-					output_expr = Expression::VariableAssignment(v.clone(),
+				for v in variables.into_iter().rev() {
+					output_expr = Expression::VariableAssignment(v,
 						Box::new(output_expr));
 				}
 	
@@ -884,13 +890,7 @@ impl Parser {
 				if variables.len() == 1 {
 					match &variables[0] {
 					Variable::Variable(lbl) => {
-						match self.parse_statement(Some(lbl)) {
-						Some(s) => {
-							return Some(Statement::Label(lbl.clone(),
-								Box::new(s)));
-						}
-						None => { return None; }
-						}
+						return Some(Statement::Label(lbl.clone()));
 					}
 					_ => {}
 					}
@@ -900,13 +900,6 @@ impl Parser {
 			Some((_, pos)) => { parsing_error!(pos, "Invalid token") }
 			None => { parsing_error!(stmt_pos, "Invalid token") }
 			}
-		}
-		// Function beginning definition 
-		Token::Number(x) => {
-			self.lexer.next();
-			check_token!(self.lexer.next(), Token::Colon);
-
-			return Some(Statement::ProgramBasis(x));
 		}
 		Token::Keyword("RETURN") => {
 			self.lexer.next();
@@ -1066,7 +1059,7 @@ impl Parser {
 		Some(output)
 	}
 
-	fn parse_statement_block(&mut self, expected_identifier: Option<&String>) -> Option<Statement> {
+	fn parse_statement_block(&mut self, expected_identifier: Option<String>) -> Option<Statement> {
 		let mut statements: Vec<Statement> = vec![];
 
 		loop {
@@ -1114,10 +1107,21 @@ impl Iterator for Parser {
 		if self.encountered_error {
 			return None;
 		}
-
-		match self.parse_statement(None) {
-		Some(Statement::EndOfFile) => { return None; }
-		Some(stmt) => { return Some(stmt); }
+		
+		let lbl = self.last_label.clone();
+		match self.parse_statement(lbl) {
+		Some(Statement::EndOfFile) => {
+			self.last_label = None;
+			return None;
+		}
+		Some(Statement::Label(lbl)) => {
+			self.last_label = Some(lbl.clone());
+			return Some(Statement::Label(lbl));
+		}
+		Some(stmt) => {
+			self.last_label = None;
+			return Some(stmt);
+		}
 		None => {
 			self.encountered_error = true;
 			return None;
