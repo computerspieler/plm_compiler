@@ -1,4 +1,4 @@
-/* $Q=1 */
+$Q=1
 2900H: DECLARE BDOS LITERALLY '3206H', TRAN LITERALLY '100H';
  /*  C O N S O L E   C O M M A N D   P R O C E S S O R (C C P)
 

@@ -6,6 +6,7 @@ use std::fs::File;
 
 use plm::lexer::Lexer;
 use plm::parser::Parser;
+use plm::preprocessor_parser::*;
 
 fn show_help_and_die() {
 	println!(concat!(
@@ -86,8 +87,12 @@ fn main() {
 			panic!("Unable to open {}: {}", path, e);
 		}
 		Ok(file) => {
+			let mut lex = Lexer::from_file(file);
+			let args = parse_compiler_arguments(&mut lex);
+			dbg!(&args);
+
+			let mut parser = Parser::new(lex);
 			let mut ast: Vec<plm::ast::Statement> = Vec::new();
-			let mut parser = Parser::new(Lexer::from_file(file));
 			while let Some(stmt) = parser.next() {
 				ast.push(stmt);
 			}

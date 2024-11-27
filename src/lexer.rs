@@ -27,6 +27,14 @@ impl Token {
 		_ => { panic!("No stringyfication for the token {:?}", self) }
 		}
 	}
+
+	pub fn to_int(&self) -> i32 {
+		match self {
+		Token::Number(x) => { *x }
+
+		_ => { panic!("No conversion to an integer for the token {:?}", self) }
+		}
+	}
 }
 
 const KEYWORDS_COUNT: usize = 34;

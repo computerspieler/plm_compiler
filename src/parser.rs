@@ -1,4 +1,5 @@
 use crate::ast::*;
+use crate::parser_macros::*;
 use crate::lexer::{Lexer, Position, Token};
 
 pub struct Parser {
@@ -7,47 +8,12 @@ pub struct Parser {
 	encountered_error: bool
 }
 
-macro_rules! parsing_error {
-	($pos: ident, $msg: tt) => { {
-		dbg!("TRACE: file: {}, line: {}", file!(), line!());
-		println!("Parsing error at {}: {}", $pos, $msg);
-		return None;
-	} };
-	($start: ident, $end: ident, $msg: tt) => { {
-		dbg!("TRACE: file: {}, line: {}", file!(), line!());
-		println!("Parsing error between {} and {}: {}",
-			$start, $end, $msg);
-		return None;
-	} };
-	($msg: tt) => { {
-		dbg!("TRACE: file: {}, line: {}", file!(), line!());
-		// Is it supposed to be the end ? We'll suppose that
-		// for now, but it could be otherwise
-		println!("Parsing error at the end: {}", $msg);
-		return None;
-	} };
-}
-
 macro_rules! check_token_validity {
 	($tok: expr) => {
 		if ($tok).is_none() {
 			parsing_error!("Missing token")
 		}
 	}
-}
-
-macro_rules! check_token {
-	($tok: expr, $goal: pat) => {
-		match ($tok) {
-		Some(($goal, _)) => { }
-		Some((_, pos)) => {
-			parsing_error!(pos, "Expected another token type")
-		}
-		None => {
-			parsing_error!("Missing token")
-		}
-		}
-	};
 }
 
 macro_rules! check_token_errorless {
