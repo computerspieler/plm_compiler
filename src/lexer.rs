@@ -525,3 +525,22 @@ impl Iterator for Lexer {
 		}
 	}
 }
+
+use crate::traits::EOSDetector;
+impl EOSDetector for Lexer {
+	fn reached_eos(&mut self) -> bool {
+		match self.peek() {
+		Some(_) => { false }
+		None => {
+			let mut buf = [0 as u8; 1];
+		
+			match self.next_byte(&mut buf) {
+			Err(e) => {
+				e.kind() == ErrorKind::UnexpectedEof
+			}
+			_ => { false }
+			}
+		}
+		}
+	}
+}

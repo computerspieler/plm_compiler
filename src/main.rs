@@ -7,6 +7,7 @@ use std::fs::File;
 use plm::lexer::Lexer;
 use plm::parser::Parser;
 use plm::preprocessor_parser::*;
+use plm::traits::*;
 
 fn show_help_and_die() {
 	println!(concat!(

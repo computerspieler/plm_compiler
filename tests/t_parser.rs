@@ -1,6 +1,7 @@
 use plm::lexer::*;
 use plm::parser::*;
 use plm::ast::*;
+use plm::traits::EOSDetector;
 
 macro_rules! compare_ast {
 	($input: literal, $goal: expr) => {{

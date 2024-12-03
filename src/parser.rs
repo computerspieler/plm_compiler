@@ -1065,15 +1065,17 @@ impl Parser {
 			}
 		}
 	}
+}
 
-	pub fn reached_eos(&mut self) -> bool {
+use crate::traits::EOSDetector;
+impl EOSDetector for Parser {
+	fn reached_eos(&mut self) -> bool {
 		!self.encountered_error &&
 		(self.lexer.reached_eos() || !self.lexer.peek().is_none())
 	}
 }
 
 use std::iter::Iterator;
-
 impl Iterator for Parser {
 	type Item = Statement;
 
