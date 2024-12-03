@@ -9,7 +9,7 @@ pub struct CompilerArguments {
 struct CompilerArgument {
 	name: char,
 	accepted_range: Option<(i32, i32)>,
-	help: &'static str,
+	_help: &'static str,
 	callback: fn(&mut CompilerArguments, i32)
 }
 
@@ -20,7 +20,7 @@ static ARGUMENTS: [CompilerArgument; ARGUMENTS_COUNT] = [
 	CompilerArgument{
 		name: 'L',
 		accepted_range: Some((1, 79)),
-		help:
+		_help:
 "Leftmargin.
 Specifies the first character position processed on each input line.
 All leading characters are ignored.",
@@ -29,19 +29,19 @@ All leading characters are ignored.",
 	CompilerArgument{
 		name: 'P',
 		accepted_range: Some((0, 1)),
-		help: "Echo input if 1, suppress echo if 0.",
+		_help: "Echo input if 1, suppress echo if 0.",
 		callback: |_output: &mut CompilerArguments, _val: i32| { /* TODO */ }
 	},
 	CompilerArgument{
 		name: 'R',
 		accepted_range: Some((1, 80)),
-		help: "Rightmargin, ignore trailing characters on each input record.",
+		_help: "Rightmargin, ignore trailing characters on each input record.",
 		callback: |_output: &mut CompilerArguments, _val: i32| { /* TODO */ }
 	},
 	CompilerArgument{
 		name: 'W',
 		accepted_range: Some((1, 120)),
-		help: "Maximum number of characters per output line.",
+		_help: "Maximum number of characters per output line.",
 		callback: |_output: &mut CompilerArguments, _val: i32| { /* TODO */ }
 	},
 
@@ -49,13 +49,13 @@ All leading characters are ignored.",
 	CompilerArgument{
 		name: 'F',
 		accepted_range: Some((0, 1)),
-		help: "Display decoded memory initialization.",
+		_help: "Display decoded memory initialization.",
 		callback: |_output: &mut CompilerArguments, _val: i32| { /* TODO */ }
 	},
 	CompilerArgument{
 		name: 'T',
 		accepted_range: Some((0, 1)),
-		help:
+		_help:
 "Display cross-reference table of approximate memory address
 versus source line number.",
 		callback: |_output: &mut CompilerArguments, _val: i32| { /* TODO */ }
@@ -63,13 +63,13 @@ versus source line number.",
 	CompilerArgument{
 		name: 'M',
 		accepted_range: Some((0, 1)),
-		help: "Display symbol table.",
+		_help: "Display symbol table.",
 		callback: |_output: &mut CompilerArguments, _val: i32| { /* TODO */ }
 	},
 	CompilerArgument{
 		name: 'Q',
 		accepted_range: Some((0, 1)),
-		help:
+		_help:
 "If 1 then object file is written in BNPF,
 otherwise the object file is written in Hex format.",
 		callback: |_output: &mut CompilerArguments, _val: i32| { /* TODO */ }
@@ -77,7 +77,7 @@ otherwise the object file is written in Hex format.",
 	CompilerArgument{
 		name: 'H',
 		accepted_range: None,
-		help:
+		_help:
 "Header.
 Decimal address at which generated code should start.
 I.e., the start of the program's ISA.",
@@ -86,7 +86,7 @@ I.e., the start of the program's ISA.",
 	CompilerArgument{
 		name: 'V',
 		accepted_range: None,
-		help:
+		_help:
 "Page number of first page of the VSA.
 I.e., variable storage, stack, etc.
 If set to zero the first availabe page above the ISA is used.",
