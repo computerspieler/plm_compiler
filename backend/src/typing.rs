@@ -1,6 +1,6 @@
 use crate::ast::*;
 
-trait TypeCheckable<Environment> {
+pub trait TypeCheckable<Environment> {
     fn get_type(&self, env: &Environment) -> Option<Type>;
 }
 

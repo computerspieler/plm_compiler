@@ -171,8 +171,10 @@ pub enum Statement<VariableType> {
 	Block(Vec<Statement<VariableType>>),
 	Loop(Vec<Statement<VariableType>>),
 	Switch(Expression<VariableType>,
-		Vec<Statement<VariableType>>
+		Vec<Option<Statement<VariableType>>>
 	),
+	Phi(VariableType, Vec<VariableType>),
+	
 	Return(Option<Expression<VariableType>>),
 	Expression(Expression<VariableType>),
 	FunctionDefinition(String, Type,
