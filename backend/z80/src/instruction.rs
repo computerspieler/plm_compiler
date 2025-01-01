@@ -14,8 +14,6 @@ pub enum WordRegister {
 
 #[derive(Debug)]
 pub enum Operand {
-	PlaceHolderValue,
-	PlaceHolderAddress,
 	Constant(i32),
 	Address(u16),
 	Port(u8),
