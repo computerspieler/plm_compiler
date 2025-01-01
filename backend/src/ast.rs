@@ -153,6 +153,7 @@ pub enum Expression<VariableType> {
 		Vec<Expression<VariableType>>
 	),
 	Variable(VariableType),
+	Phi(Option<VariableType>, Option<VariableType>),
 	Constant(Constant)
 }
 
@@ -173,7 +174,6 @@ pub enum Statement<VariableType> {
 	Switch(Expression<VariableType>,
 		Vec<Option<Statement<VariableType>>>
 	),
-	Phi(VariableType, Vec<VariableType>),
 	
 	Return(Option<Expression<VariableType>>),
 	Expression(Expression<VariableType>),

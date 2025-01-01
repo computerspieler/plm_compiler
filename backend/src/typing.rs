@@ -107,6 +107,17 @@ for Expression<VariableType>
         Expression::FunctionCall(_name, _args) => {
             None
         }
+		Expression::Phi(None, None) => { None }
+		Expression::Phi(Some(v), None) |
+		Expression::Phi(None, Some(v)) => {
+			v.get_type(env)
+		}
+		Expression::Phi(Some(v1), Some(v2)) => {
+			let t1 = v1.get_type(env);
+			let t2 = v2.get_type(env);
+			if t1 == t2 { t1 }
+			else { None }
+		}
         }
     }
 }
