@@ -1,2 +1,2 @@
-mod instruction;
-mod assembler;
+pub mod instruction;
+pub mod assembler;

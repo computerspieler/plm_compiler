@@ -1,5 +1,5 @@
 use crate::instruction::*;
-use std::{collections::VecDeque, ops::Add};
+use std::collections::VecDeque;
 
 pub struct Assembler<InputType: Iterator<Item = Instruction>> {
 	input: InputType,
@@ -110,7 +110,8 @@ Assembler<InputType> {
 	use crate::instruction::WordRegister::*;
 	use crate::instruction::ByteRegister::*;
 	use Operand::*;
-	macro_rules! b {
+	
+    macro_rules! b {
 		[$e:expr] => {{
 			self.queue.push_back(($e) as u8);
 			return true;
@@ -130,7 +131,8 @@ Assembler<InputType> {
 			}
 		}};
 	}
-	match inst {
+	
+    match inst {
 		LD(ByteRegister(r), ByteRegister(r_))
 			=> b![0x40 | self.get_r_value(r) << 3 | self.get_r_value(r_)],
 		LD(ByteRegister(r), Constant(n))
@@ -321,31 +323,31 @@ Assembler<InputType> {
 		CP(AddressRegisterWithOffset(IY, d))
 			=> b![0xFD, 0xBE, d as u8],
 
-		INC(ByteRegister(r))						=> b![0x04 | self.get_r_value(r) << 3],
+		INC(ByteRegister(r))			=> b![0x04 | self.get_r_value(r) << 3],
 		INC(AddressRegister(HL)) 					=> b![0x34],
-		INC(AddressRegisterWithOffset(IX, d))		=> b![0xDD, 0x34, d as u8],
-		INC(AddressRegisterWithOffset(IY, d))		=> b![0xFD, 0x34, d as u8],
+		INC(AddressRegisterWithOffset(IX, d))	=> b![0xDD, 0x34, d as u8],
+		INC(AddressRegisterWithOffset(IY, d))	=> b![0xFD, 0x34, d as u8],
 		INC(WordRegister(IX))						=> b![0xDD, 0x23],
 		INC(WordRegister(IY))						=> b![0xFD, 0x23],
-		INC(WordRegister(ss)) 						=> b![0x03 | self.get_ss_value(ss) << 4],
+		INC(WordRegister(ss)) 		=> b![0x03 | self.get_ss_value(ss) << 4],
 
-		DEC(ByteRegister(r))					=> b![0x05 | self.get_r_value(r) << 3],
-		DEC(AddressRegister(HL)) 				=> b![0x35],
+		DEC(ByteRegister(r))			=> b![0x05 | self.get_r_value(r) << 3],
+		DEC(AddressRegister(HL)) 					=> b![0x35],
 		DEC(AddressRegisterWithOffset(IX, d))	=> b![0xDD, 0x35, d as u8],
 		DEC(AddressRegisterWithOffset(IY, d))	=> b![0xFD, 0x35, d as u8],
-		DEC(WordRegister(IX))					=> b![0xDD, 0x2B],
-		DEC(WordRegister(IY))					=> b![0xFD, 0x2B],
-		DEC(WordRegister(ss)) 					=> b![0x0B | self.get_ss_value(ss) << 4],
+		DEC(WordRegister(IX))						=> b![0xDD, 0x2B],
+		DEC(WordRegister(IY))						=> b![0xFD, 0x2B],
+		DEC(WordRegister(ss)) 		=> b![0x0B | self.get_ss_value(ss) << 4],
 
-		DAA		=> b![0x27],
-		CPL		=> b![0x2F],
-		NEG		=> b![0xED, 0x44],
-		CCF		=> b![0x3F],
-		SCF		=> b![0x37],
-		NOP		=> b![0x00],
-		HALT	=> b![0x76],
-		DI		=> b![0xF3],
-		EI		=> b![0xFB],
+		DAA	 => b![0x27],
+		CPL	 => b![0x2F],
+		NEG	 => b![0xED, 0x44],
+		CCF	 => b![0x3F],
+		SCF	 => b![0x37],
+		NOP	 => b![0x00],
+		HALT => b![0x76],
+		DI	 => b![0xF3],
+		EI	 => b![0xFB],
 
 		IM(0)	=> b![0xED, 0x46],
 		IM(1)	=> b![0xED, 0x56],
@@ -386,12 +388,12 @@ Assembler<InputType> {
 		SRL(AddressRegisterWithOffset(IX, d)) => b![0xDD, 0xCB, d as u8, 0x3E],
 		SRL(AddressRegisterWithOffset(IY, d)) => b![0xFD, 0xCB, d as u8, 0x3E],
 
-		RLCA 	=> b![0x07],
-		RLA 	=> b![0x17],
-		RRCA 	=> b![0x0F],
-		RRA 	=> b![0x1F],
-		RLD 	=> b![0xED, 0x6F],
-		RRD 	=> b![0xED, 0x67],
+		RLCA => b![0x07],
+		RLA  => b![0x17],
+		RRCA => b![0x0F],
+		RRA  => b![0x1F],
+		RLD  => b![0xED, 0x6F],
+		RRD  => b![0xED, 0x67],
 
 		BIT(b, ByteRegister(r)) if b < 8
 			=> b![0xCB, 0x40 | b << 3 | self.get_r_value(r)],
@@ -402,12 +404,9 @@ Assembler<InputType> {
 		
 		JP(None, Address(nn))
 			=> b![0xC3, (nn >> 8) & 0xFF, nn & 0xFF],
-		JP(None, AddressRegister(HL))
-			=> b![0xE9],
-		JP(None, AddressRegister(IX))
-			=> b![0xDD, 0xE9],
-		JP(None, AddressRegister(IY))
-			=> b![0xFD, 0xE9],
+		JP(None, AddressRegister(HL)) => b![0xE9],
+		JP(None, AddressRegister(IX)) => b![0xDD, 0xE9],
+		JP(None, AddressRegister(IY)) => b![0xFD, 0xE9],
 		JP(Some(cc), Address(nn))
 			=> b![0xC2 | self.get_cc_value(cc) << 3, (nn >> 8) & 0xFF, nn & 0xFF],
 		
@@ -429,10 +428,10 @@ Assembler<InputType> {
 		CALL(Some(cc), Address(nn))
 			=> b![0xC8 | self.get_cc_value(cc) << 3, (nn >> 8) & 0xFF, nn & 0xFF],
 
-		RET(None) 					=> b![0xC9],
-		RET(Some(cc))	=> b![0xC0 | (self.get_cc_value(cc) << 3)],
-		RETI 						=> b![0xED, 0x4D],
-		RETN 						=> b![0xED, 0x45],
+		RET(None) 				 => b![0xC9],
+		RET(Some(cc)) => b![0xC0 | (self.get_cc_value(cc) << 3)],
+		RETI 					 => b![0xED, 0x4D],
+		RETN 					 => b![0xED, 0x45],
 		
 		RST(n)	if n % 8 == 0 && n <= 0x38
 			=> b![0xC7 | (n / 8) << 3],
@@ -442,19 +441,19 @@ Assembler<InputType> {
 		IN(ByteRegister(r), PortRegister(C))
 			=> b![0xED, 0x40 | self.get_r_value(r) << 3],
 	
-		INI 				=> b![0xED, 0xA2],
-		INIR 				=> b![0xED, 0xB2],
-		IND 				=> b![0xED, 0xAA],
-		INDR 				=> b![0xED, 0xBA],
+		INI  => b![0xED, 0xA2],
+		INIR => b![0xED, 0xB2],
+		IND  => b![0xED, 0xAA],
+		INDR => b![0xED, 0xBA],
 
 		OUT(Port(n), ByteRegister(A))
 			=> b![0xD3, n],
 		OUT(PortRegister(C), ByteRegister(r))
 			=> b![0xED, 0x41 | self.get_r_value(r) << 3],
-		OUTI 				=> b![0xED, 0xA3],
-		OTIR 				=> b![0xED, 0xB3],
-		OUTD 				=> b![0xED, 0xAB],
-		OTDR 				=> b![0xED, 0xBB],
+		OUTI => b![0xED, 0xA3],
+		OTIR => b![0xED, 0xB3],
+		OUTD => b![0xED, 0xAB],
+		OTDR => b![0xED, 0xBB],
 
 		_ => {
 			println!("Error, Invalid instruction: {:?}", inst);
