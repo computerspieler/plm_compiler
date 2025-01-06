@@ -1,9 +1,9 @@
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum ByteRegister {
 	A, B, C, D, E, H, L
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum WordRegister {
 	AF, BC, DE, HL,
 	// Since we can't have prime, i'll use underscores
@@ -12,7 +12,7 @@ pub enum WordRegister {
 	SP
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Operand {
 	Constant(i32),
 	Address(u16),
@@ -28,7 +28,7 @@ pub enum Operand {
 	I, R
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Condition {
 	Z, NZ,
 	C, NC,
@@ -36,7 +36,7 @@ pub enum Condition {
 	P, M
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Instruction {
 	LD(Operand, Operand),
 	PUSH(Operand),
@@ -85,6 +85,7 @@ pub enum Instruction {
 	RRC(Operand),
 	RR(Operand),
 	SLA(Operand),
+	SLL(Operand),
 	SRA(Operand),
 	SRL(Operand),
 	RLD,
@@ -114,5 +115,8 @@ pub enum Instruction {
 	OUTI,
 	OTIR,
 	OUTD,
-	OTDR
+	OTDR,
+
+	/* This is Assembler specific */
+	Binary(Vec<u8>)
 }
