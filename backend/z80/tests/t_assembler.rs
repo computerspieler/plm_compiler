@@ -4,8 +4,14 @@ use z80::assembler::*;
 
 macro_rules! test {
     ($test_name:ident, [$( $insts:expr ),+], [$( $values:expr ),+]) => {
+		test!($test_name, [$( $insts ),+], [$( $values ),+], _unused: u8);
+	};
+
+    ($test_name:ident, [$( $insts:expr ),+], [$( $values:expr ),+], $var: ident: $vt: ty) => {
         #[test]
         fn $test_name() {
+			let $var: $vt = 0x87 as $vt;
+
             let i = vec![$($insts),+];
             let a = Assembler::new(i.into_iter(), false);
             let o: Vec<u8> = a.collect();
@@ -13,13 +19,19 @@ macro_rules! test {
 			assert!(o != [], "Invalid output for {:?}: no output", [$($insts),+]);
             assert!(o == e, "Invalid output for {:?}: got {:?}, expected {:?}", [$($insts),+], o, e);
         }
-    }
+    };
 }
 
 macro_rules! test_ub {
-    ($test_name:ident, [$( $insts:expr ),+], [$( $values:literal ),+]) => {
+    ($test_name:ident, [$( $insts:expr ),+], [$( $values:expr ),+]) => {
+		test_ub!($test_name, [$( $insts ),+], [$( $values ),+], _unused: u8);
+	};
+
+    ($test_name:ident, [$( $insts:expr ),+], [$( $values:literal ),+], $var: ident: $vt: ty) => {
         #[test]
         fn $test_name() {
+			let $var: $vt = 0x87 as $vt;
+
             let i = vec![$($insts),+];
             let e: Vec<u8> = vec![$($values),+];
 			
@@ -51,7 +63,7 @@ test!(adc_a__ix__, [ADC(ByteRegister(A),AddressRegister(IX))], [0xDD, 0x8E, 0x00
 test!(adc_a__iy__, [ADC(ByteRegister(A),AddressRegister(IY))], [0xFD, 0x8E, 0x00]);
 //test!(adc_a__iy_DIS__, [ADC(ByteRegister(A),(WordRegister(IY)+DIS))], [0xFD, 0x8E, DIS]);
 //test!(adc_a__iy_NDIS__, [ADC(ByteRegister(A),(WordRegister(IY)-NDIS))], [0xFD, 0x8E, NDIS]);
-//test!(adc_a_N_, [ADC(ByteRegister(A),Constant(n))], [0xCE, n]);
+test!(adc_a_N_, [ADC(ByteRegister(A),Constant(n as i32))], [0xCE, n], n: u8);
 test!(adc_a_a_, [ADC(ByteRegister(A),ByteRegister(A))], [0x8F]);
 test!(adc_a_b_, [ADC(ByteRegister(A),ByteRegister(B))], [0x88]);
 test!(adc_a_c_, [ADC(ByteRegister(A),ByteRegister(C))], [0x89]);
@@ -74,7 +86,7 @@ test!(add_a__ix__, [ADD(ByteRegister(A),AddressRegister(IX))], [0xDD, 0x86, 0x00
 test!(add_a__iy__, [ADD(ByteRegister(A),AddressRegister(IY))], [0xFD, 0x86, 0x00]);
 //test!(add_a__iy_DIS__, [ADD(ByteRegister(A),(WordRegister(IY)+DIS))], [0xFD, 0x86, DIS]);
 //test!(add_a__iy_NDIS__, [ADD(ByteRegister(A),(WordRegister(IY)-NDIS))], [0xFD, 0x86, NDIS]);
-//test!(add_a_N_, [ADD(ByteRegister(A),n)], [0xC6, n]);
+test!(add_a_N_, [ADD(ByteRegister(A),Constant(n as i32))], [0xC6, n], n: u8);
 test!(add_a_a_, [ADD(ByteRegister(A),ByteRegister(A))], [0x87]);
 test!(add_a_b_, [ADD(ByteRegister(A),ByteRegister(B))], [0x80]);
 test!(add_a_c_, [ADD(ByteRegister(A),ByteRegister(C))], [0x81]);
@@ -105,7 +117,7 @@ test!(and__ix__, [AND(AddressRegister(IX))], [0xDD, 0xA6, 0x00]);
 test!(and__iy__, [AND(AddressRegister(IY))], [0xFD, 0xA6, 0x00]);
 //test!(and__iy_DIS__, [AND((WordRegister(IY)+DIS))], [0xFD, 0xA6, DIS]);
 //test!(and__iy_NDIS__, [AND((WordRegister(IY)-NDIS))], [0xFD, 0xA6, NDIS]);
-//test!(and_N_, [AND(n)], [0xE6, n]);
+test!(and_N_, [AND(Constant(n as i32))], [0xE6, n], n: u8);
 test!(and_a_, [AND(ByteRegister(A))], [0xA7]);
 test!(and_b_, [AND(ByteRegister(B))], [0xA0]);
 test!(and_c_, [AND(ByteRegister(C))], [0xA1]);
@@ -246,7 +258,7 @@ test!(cp__ix__, [CP(AddressRegister(IX))], [0xDD, 0xBE, 0x00]);
 test!(cp__iy__, [CP(AddressRegister(IY))], [0xFD, 0xBE, 0x00]);
 //test!(cp__iy_DIS__, [CP((WordRegister(IY)+DIS))], [0xFD, 0xBE, DIS]);
 //test!(cp__iy_NDIS__, [CP((WordRegister(IY)-NDIS))], [0xFD, 0xBE, NDIS]);
-//test!(cp_N_, [CP(Constant(n))], [0xFE, n]);
+test!(cp_N_, [CP(Constant(n as i32))], [0xFE, n], n: u8);
 test!(cp_a_, [CP(ByteRegister(A))], [0xBF]);
 test!(cp_b_, [CP(ByteRegister(B))], [0xB8]);
 test!(cp_c_, [CP(ByteRegister(C))], [0xB9]);
