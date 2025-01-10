@@ -25,7 +25,8 @@ pub enum Operand {
 	
 	IXH, IXL,
 	IYH, IYL,
-	I, R
+	I, R,
+	F
 }
 
 #[derive(Debug, Clone)]
