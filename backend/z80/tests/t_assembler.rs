@@ -27,11 +27,9 @@ macro_rules! test_ub {
             let o: Vec<u8> = a.collect();
             assert!(o != e, "An undefined instruction has been translated correctly");
 
-			/*
 			let a = Assembler::new(i.into_iter(), true);
 			let o: Vec<u8> = a.collect();
 			assert!(o == e, "Invalid output for {:?}: got {:?}, expected {:?}", [$($insts),+], o, e);
-			*/
         }
     }
 }
