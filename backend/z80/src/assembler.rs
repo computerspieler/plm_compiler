@@ -104,6 +104,97 @@ Assembler<InputType> {
 		}
 	}
 
+	fn convert_macro_instruction(&self, inst: Instruction) -> Instruction
+	{
+		use Instruction::*;
+		use crate::instruction::WordRegister::*;
+		use crate::instruction::ByteRegister::*;
+		use Operand::*;
+		
+		match inst {
+		LD(ByteRegister(r), AddressRegister(IX)) => { LD(ByteRegister(r), AddressRegisterWithOffset(IX, 0)) },
+		LD(ByteRegister(r), AddressRegister(IY)) => { LD(ByteRegister(r), AddressRegisterWithOffset(IY, 0)) },
+		LD(AddressRegister(IX), ByteRegister(r)) => { LD(AddressRegisterWithOffset(IX, 0), ByteRegister(r)) },
+		LD(AddressRegister(IY), ByteRegister(r)) => { LD(AddressRegisterWithOffset(IY, 0), ByteRegister(r)) },
+		LD(AddressRegister(IX), Constant(n)) => { LD(AddressRegisterWithOffset(IX, 0), Constant(n)) },
+		LD(AddressRegister(IY), Constant(n)) => { LD(AddressRegisterWithOffset(IY, 0), Constant(n)) },
+		ADD(ByteRegister(A), AddressRegister(IX)) => { ADD(ByteRegister(A), AddressRegisterWithOffset(IX, 0)) },
+		ADD(ByteRegister(A), AddressRegister(IY)) => { ADD(ByteRegister(A), AddressRegisterWithOffset(IY, 0)) },
+		ADC(ByteRegister(A), AddressRegister(IX)) => { ADC(ByteRegister(A), AddressRegisterWithOffset(IX, 0)) },
+		ADC(ByteRegister(A), AddressRegister(IY)) => { ADC(ByteRegister(A), AddressRegisterWithOffset(IY, 0)) },
+		SBC(ByteRegister(A), AddressRegister(IX)) => { SBC(ByteRegister(A), AddressRegisterWithOffset(IX, 0)) },
+		SBC(ByteRegister(A), AddressRegister(IY)) => { SBC(ByteRegister(A), AddressRegisterWithOffset(IY, 0)) },
+		SUB(AddressRegister(IX)) => { SUB(AddressRegisterWithOffset(IX, 0)) },
+		SUB(AddressRegister(IY)) => { SUB(AddressRegisterWithOffset(IY, 0)) },
+		AND(AddressRegister(IX)) => { AND(AddressRegisterWithOffset(IX, 0)) },
+		AND(AddressRegister(IY)) => { AND(AddressRegisterWithOffset(IY, 0)) },
+		XOR(AddressRegister(IX)) => { XOR(AddressRegisterWithOffset(IX, 0)) },
+		XOR(AddressRegister(IY)) => { XOR(AddressRegisterWithOffset(IY, 0)) },
+		OR(AddressRegister(IX)) => { OR(AddressRegisterWithOffset(IX, 0)) },
+		OR(AddressRegister(IY)) => { OR(AddressRegisterWithOffset(IY, 0)) },
+		CP(AddressRegister(IX)) => { CP(AddressRegisterWithOffset(IX, 0)) },
+		CP(AddressRegister(IY)) => { CP(AddressRegisterWithOffset(IY, 0)) },
+		INC(AddressRegister(IX)) => { INC(AddressRegisterWithOffset(IX, 0)) },
+		INC(AddressRegister(IY)) => { INC(AddressRegisterWithOffset(IY, 0)) },
+		DEC(AddressRegister(IX)) => { DEC(AddressRegisterWithOffset(IX, 0)) },
+		DEC(AddressRegister(IY)) => { DEC(AddressRegisterWithOffset(IY, 0)) },
+		RLC(AddressRegister(IX)) => { RLC(AddressRegisterWithOffset(IX, 0)) },
+		RLC(AddressRegister(IY)) => { RLC(AddressRegisterWithOffset(IY, 0)) },
+		RL(AddressRegister(IX)) => { RL(AddressRegisterWithOffset(IX, 0)) },
+		RL(AddressRegister(IY)) => { RL(AddressRegisterWithOffset(IY, 0)) },
+		SRA(AddressRegister(IX)) => { SRA(AddressRegisterWithOffset(IX, 0)) },
+		SRA(AddressRegister(IY)) => { SRA(AddressRegisterWithOffset(IY, 0)) },
+		RRC(AddressRegister(IX)) => { RRC(AddressRegisterWithOffset(IX, 0)) },
+		RRC(AddressRegister(IY)) => { RRC(AddressRegisterWithOffset(IY, 0)) },
+		RR(AddressRegister(IX)) => { RR(AddressRegisterWithOffset(IX, 0)) },
+		RR(AddressRegister(IY)) => { RR(AddressRegisterWithOffset(IY, 0)) },
+		SLA(AddressRegister(IX)) => { SLA(AddressRegisterWithOffset(IX, 0)) },
+		SLA(AddressRegister(IY)) => { SLA(AddressRegisterWithOffset(IY, 0)) },
+		SRL(AddressRegister(IX)) => { SRL(AddressRegisterWithOffset(IX, 0)) },
+		SRL(AddressRegister(IY)) => { SRL(AddressRegisterWithOffset(IY, 0)) },
+		BIT(b, AddressRegister(IX)) => { BIT(b, AddressRegisterWithOffset(IX, 0)) },
+		BIT(b, AddressRegister(IY)) => { BIT(b, AddressRegisterWithOffset(IY, 0)) },
+		RES(b, AddressRegister(IX)) => { RES(b, AddressRegisterWithOffset(IX, 0)) },
+		RES(b, AddressRegister(IY)) => { RES(b, AddressRegisterWithOffset(IY, 0)) },
+		SET(b, AddressRegister(IX)) => { SET(b, AddressRegisterWithOffset(IX, 0)) },
+		SET(b, AddressRegister(IY)) => { SET(b, AddressRegisterWithOffset(IY, 0)) },
+		
+		_ => { inst }
+		}
+	}
+
+    fn convert_undocumented_instruction(&mut self, inst: Instruction) -> bool
+    {
+		use Instruction::*;
+		use crate::instruction::WordRegister::*;
+		use crate::instruction::ByteRegister;
+		use Operand::*;
+		
+		macro_rules! b {
+			[$e:expr] => {{
+				self.queue.push_back(($e) as u8);
+				return true;
+			}};
+			[$e:expr,$($next:expr),*] => {{
+				self.queue.push_back(($e) as u8);
+				b![$($next),*];
+			}};
+		}
+
+        match inst {
+		SLL(ByteRegister(r))		  		=> b![0xCB, 0x30 | self.get_r_value(r)],
+		SLL(AddressRegister(HL))				  		=> b![0xCB, 0x36],
+		SLL(AddressRegisterWithOffset(IX, d)) 		=> b![0xDD, 0xCB, d as u8, 0x36],
+		SLL(AddressRegisterWithOffset(IY, d)) 		=> b![0xFD, 0xCB, d as u8, 0x36],
+		OUT(PortRegister(ByteRegister::C), Constant(0))	=> b![0xED, 71],
+
+		_ => {
+			println!("Error, Invalid instruction: {:?}", inst);
+			return false;
+		}
+        }
+    }
+
 	fn convert_instruction(&mut self, inst: Instruction) -> bool
 	{
 	use Instruction::*;
@@ -121,18 +212,14 @@ Assembler<InputType> {
 			b![$($next),*];
 		}};
 	}
-	macro_rules! ub {
-		[$($next:expr),*] => {{
-			if !self.enable_undocumented_instructions {
-				println!("Error, Undocumented instruction: {:?}", inst);
-				return false;
-			} else {
-				b![$($next),*];
-			}
-		}};
-	}
 	
+	let inst = self.convert_macro_instruction(inst);
     match inst {
+		Binary(data) => {
+			self.queue.extend(data);
+			return true;
+		},
+
 		LD(ByteRegister(r), ByteRegister(r_))
 			=> b![0x40 | self.get_r_value(r) << 3 | self.get_r_value(r_)],
 		LD(ByteRegister(r), Constant(n))
@@ -159,10 +246,10 @@ Assembler<InputType> {
 
 		LD(ByteRegister(A), AddressRegister(BC)) => b![0x0A],
 		LD(ByteRegister(A), AddressRegister(DE)) => b![0x1A],
-		LD(ByteRegister(A), Address(nn))    => b![0x3A, (nn >> 8) & 0xFF, nn & 0xFF],
+		LD(ByteRegister(A), Address(nn))    => b![0x3A, nn & 0xFF, (nn >> 8) & 0xFF],
 		LD(AddressRegister(BC), ByteRegister(A)) => b![0x02],
 		LD(AddressRegister(DE), ByteRegister(A)) => b![0x12],
-		LD(Address(nn),    ByteRegister(A)) => b![0x32, (nn >> 8) & 0xFF, nn & 0xFF],
+		LD(Address(nn),    ByteRegister(A)) => b![0x32, nn & 0xFF, (nn >> 8) & 0xFF],
 
 		LD(ByteRegister(A), I) => b![0xED, 0x57],
 		LD(ByteRegister(A), R) => b![0xED, 0x5F],
@@ -170,29 +257,29 @@ Assembler<InputType> {
 		LD(R, ByteRegister(A)) => b![0xED, 0x4F],
 
 		LD(WordRegister(IX), Constant(nn))
-			=> b![0xDD, 0x21, (nn >> 8) & 0xFF, nn & 0xFF],
+			=> b![0xDD, 0x21, nn & 0xFF, (nn >> 8) & 0xFF],
 		LD(WordRegister(IY), Constant(nn))
-			=> b![0xFD, 0x21, (nn >> 8) & 0xFF, nn & 0xFF],
+			=> b![0xFD, 0x21, nn & 0xFF, (nn >> 8) & 0xFF],
 		LD(WordRegister(dd), Constant(nn))
-			=> b![0x01 | self.get_dd_value(dd) << 4, (nn >> 8) & 0xFF, nn & 0xFF],
+			=> b![0x01 | self.get_dd_value(dd) << 4, nn & 0xFF, (nn >> 8) & 0xFF],
 
 		LD(WordRegister(IX), Address(nn))
-			=> b![0xDD, 0x2A, (nn >> 8) & 0xFF, nn & 0xFF],
+			=> b![0xDD, 0x2A, nn & 0xFF, (nn >> 8) & 0xFF],
 		LD(WordRegister(IY), Address(nn))
-			=> b![0xFD, 0x2A, (nn >> 8) & 0xFF, nn & 0xFF],
+			=> b![0xFD, 0x2A, nn & 0xFF, (nn >> 8) & 0xFF],
 		LD(WordRegister(HL), Address(nn))
-			=> b![0x2A, (nn >> 8) & 0xFF, nn & 0xFF],
+			=> b![0x2A, nn & 0xFF, (nn >> 8) & 0xFF],
 		LD(WordRegister(dd), Address(nn))
-			=> b![0xED, 0x4B | self.get_dd_value(dd) << 4, (nn >> 8) & 0xFF, nn & 0xFF],
+			=> b![0xED, 0x4B | self.get_dd_value(dd) << 4, nn & 0xFF, (nn >> 8) & 0xFF],
 		
 		LD(Address(nn), WordRegister(IX))
-			=> b![0xDD, 0x22, (nn >> 8) & 0xFF, nn & 0xFF],
+			=> b![0xDD, 0x22, nn & 0xFF, (nn >> 8) & 0xFF],
 		LD(Address(nn), WordRegister(IY))
-			=> b![0xFD, 0x22, (nn >> 8) & 0xFF, nn & 0xFF],
+			=> b![0xFD, 0x22, nn & 0xFF, (nn >> 8) & 0xFF],
 		LD(Address(nn), WordRegister(HL))
-			=> b![0x22, (nn >> 8) & 0xFF, nn & 0xFF],
+			=> b![0x22, nn & 0xFF, (nn >> 8) & 0xFF],
 		LD(Address(nn), WordRegister(dd))
-			=> b![0xED, 0x43 | self.get_dd_value(dd) << 4, (nn >> 8) & 0xFF, nn & 0xFF],
+			=> b![0xED, 0x43 | self.get_dd_value(dd) << 4, nn & 0xFF, (nn >> 8) & 0xFF],
 		
 		LD(WordRegister(SP), WordRegister(HL)) => b![0xF9],
 		LD(WordRegister(SP), WordRegister(IX)) => b![0xDD, 0xF9],
@@ -234,7 +321,7 @@ Assembler<InputType> {
 			=> b![0xFD, 0x86, d as u8],
 		
 		ADC(ByteRegister(A), ByteRegister(r))
-			=> b![0x84 | self.get_r_value(r)],
+			=> b![0x88 | self.get_r_value(r)],
 		ADC(ByteRegister(A), Constant(n))
 			=> b![0xCE, n as u8],
 		ADC(ByteRegister(A), AddressRegister(HL))
@@ -245,11 +332,12 @@ Assembler<InputType> {
 			=> b![0xFD, 0x8E, d as u8],
 
 		SBC(ByteRegister(A), ByteRegister(r))
-			=> b![0x94 | self.get_r_value(r)],
+			=> b![0x98 | self.get_r_value(r)],
 		SBC(ByteRegister(A), Constant(n))
 			=> b![0xDE, n as u8],
 		SBC(ByteRegister(A), AddressRegister(HL))
 			=> b![0x9E],
+		
 		SBC(ByteRegister(A), AddressRegisterWithOffset(IX, d))
 			=> b![0xDD, 0x9E, d as u8],
 		SBC(ByteRegister(A), AddressRegisterWithOffset(IY, d))
@@ -258,7 +346,7 @@ Assembler<InputType> {
 		ADD(WordRegister(HL), WordRegister(ss))
 			=> b![0x09 | self.get_ss_value(ss) << 4],
 		ADD(WordRegister(IX), WordRegister(pp))
-			=> b![0xDD, 0x49 | self.get_pp_value(pp) << 4],
+			=> b![0xDD, 0x09 | self.get_pp_value(pp) << 4],
 		ADD(WordRegister(IY), WordRegister(rr))
 			=> b![0xFD, 0x09 | self.get_rr_value(rr) << 4],
 		
@@ -377,7 +465,7 @@ Assembler<InputType> {
 		SLA(AddressRegister(HL))				  => b![0xCB, 0x26],
 		SLA(AddressRegisterWithOffset(IX, d)) => b![0xDD, 0xCB, d as u8, 0x26],
 		SLA(AddressRegisterWithOffset(IY, d)) => b![0xFD, 0xCB, d as u8, 0x26],
-
+        
 		SRA(ByteRegister(r))		  => b![0xCB, 0x28 | self.get_r_value(r)],
 		SRA(AddressRegister(HL))				  => b![0xCB, 0x2E],
 		SRA(AddressRegisterWithOffset(IX, d)) => b![0xDD, 0xCB, d as u8, 0x2E],
@@ -397,36 +485,56 @@ Assembler<InputType> {
 
 		BIT(b, ByteRegister(r)) if b < 8
 			=> b![0xCB, 0x40 | b << 3 | self.get_r_value(r)],
+		BIT(b, AddressRegister(HL)) if b < 8
+			=> b![0xCB, 0x46 | b << 3],
+		BIT(b, AddressRegisterWithOffset(IX, d)) if b < 8
+			=> b![0xDD, 0xCB, d, 0x46 | b << 3],
+		BIT(b, AddressRegisterWithOffset(IY, d)) if b < 8
+			=> b![0xFD, 0xCB, d, 0x46 | b << 3],
+		
 		RES(b, ByteRegister(r)) if b < 8
 			=> b![0xCB, 0x80 | b << 3 | self.get_r_value(r)],
+		RES(b, AddressRegister(HL)) if b < 8
+			=> b![0xCB, 0x86 | b << 3],
+		RES(b, AddressRegisterWithOffset(IX, d)) if b < 8
+			=> b![0xDD, 0xCB, d, 0x86 | b << 3],
+		RES(b, AddressRegisterWithOffset(IY, d)) if b < 8
+			=> b![0xFD, 0xCB, d, 0x86 | b << 3],
+
 		SET(b, ByteRegister(r)) if b < 8
 			=> b![0xCB, 0xC0 | b << 3 | self.get_r_value(r)],
+		SET(b, AddressRegister(HL)) if b < 8
+			=> b![0xCB, 0xC6 | b << 3],
+		SET(b, AddressRegisterWithOffset(IX, d)) if b < 8
+			=> b![0xDD, 0xCB, d, 0xC6 | b << 3],
+		SET(b, AddressRegisterWithOffset(IY, d)) if b < 8
+			=> b![0xFD, 0xCB, d, 0xC6 | b << 3],
 		
 		JP(None, Address(nn))
-			=> b![0xC3, (nn >> 8) & 0xFF, nn & 0xFF],
+			=> b![0xC3, nn & 0xFF, (nn >> 8) & 0xFF],
 		JP(None, AddressRegister(HL)) => b![0xE9],
 		JP(None, AddressRegister(IX)) => b![0xDD, 0xE9],
 		JP(None, AddressRegister(IY)) => b![0xFD, 0xE9],
 		JP(Some(cc), Address(nn))
-			=> b![0xC2 | self.get_cc_value(cc) << 3, (nn >> 8) & 0xFF, nn & 0xFF],
+			=> b![0xC2 | self.get_cc_value(cc) << 3, nn & 0xFF, (nn >> 8) & 0xFF],
 		
-		JR(None, Address(nn)) => b![0x18, (nn >> 8) & 0xFF, nn & 0xFF],
+		JR(None, Address(nn)) => b![0x18, nn & 0xFF, (nn >> 8) & 0xFF],
 		JR(Some(Condition::C), Address(nn))
-			=> b![0x38, (nn >> 8) & 0xFF, nn & 0xFF],
+			=> b![0x38, nn & 0xFF, (nn >> 8) & 0xFF],
 		JR(Some(Condition::NC), Address(nn))
-			=> b![0x30, (nn >> 8) & 0xFF, nn & 0xFF],
+			=> b![0x30, nn & 0xFF, (nn >> 8) & 0xFF],
 		JR(Some(Condition::Z), Address(nn))
-			=> b![0x28, (nn >> 8) & 0xFF, nn & 0xFF],
+			=> b![0x28, nn & 0xFF, (nn >> 8) & 0xFF],
 		JR(Some(Condition::NZ), Address(nn))
-			=> b![0x20, (nn >> 8) & 0xFF, nn & 0xFF],
+			=> b![0x20, nn & 0xFF, (nn >> 8) & 0xFF],
 
 		DJNZ(offset)
 			=> b![0x10, offset],
 		
 		CALL(None, Address(nn))
-			=> b![0xCD, (nn >> 8) & 0xFF, nn & 0xFF],
+			=> b![0xCD, nn & 0xFF, (nn >> 8) & 0xFF],
 		CALL(Some(cc), Address(nn))
-			=> b![0xC8 | self.get_cc_value(cc) << 3, (nn >> 8) & 0xFF, nn & 0xFF],
+			=> b![0xC8 | self.get_cc_value(cc) << 3, nn & 0xFF, (nn >> 8) & 0xFF],
 
 		RET(None) 				 => b![0xC9],
 		RET(Some(cc)) => b![0xC0 | (self.get_cc_value(cc) << 3)],
@@ -455,6 +563,8 @@ Assembler<InputType> {
 		OUTD => b![0xED, 0xAB],
 		OTDR => b![0xED, 0xBB],
 
+        _ if self.enable_undocumented_instructions =>
+			self.convert_undocumented_instruction(inst),
 		_ => {
 			println!("Error, Invalid instruction: {:?}", inst);
 			return false;
