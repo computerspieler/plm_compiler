@@ -31,10 +31,11 @@ macro_rules! test_ub {
 			
             let a = Assembler::new(iter::once($inst), false);
             let o: Vec<u8> = a.collect();
-            assert!(o != e, "An undefined instruction has been translated correctly");
+            assert!(o == [], "An undefined instruction has been translated correctly");
 
 			let a = Assembler::new(iter::once($inst), true);
 			let o: Vec<u8> = a.collect();
+			assert!(o != [], "Invalid output for {:?}: no output", $inst);
 			assert!(o == e, "Invalid output for {:?}: got {:?}, expected {:?}", $inst, o, e);
         }
     }
