@@ -180,18 +180,14 @@ Assembler<InputType> {
 		use crate::instruction::WordRegister::*;
 		
 		macro_rules! b {
-			[$e:expr] => {{
-				self.queue.push_back(($e) as u8);
+			[$($e:expr),*] => {{
+				$(self.queue.push_back(($e) as u8);)*
 				return true;
-			}};
-			[$e:expr,$($next:expr),*] => {{
-				self.queue.push_back(($e) as u8);
-				b![$($next),*];
 			}};
 		}
 
 		macro_rules! ixx_instruction {
-			($r: ident| $($before:expr),*;$eh:literal,$el:literal; $($next:expr),*) => {
+			($r: ident| $($before:expr),* ;$eh:literal,$el:literal; $($next:expr),*) => {
 				match $r {
 				IXH => b![0xDD, $($before,)* $eh $(,$next)*],
 				IXL => b![0xDD, $($before,)* $el $(,$next)*],
@@ -274,13 +270,9 @@ Assembler<InputType> {
 	use Operand::*;
 	
     macro_rules! b {
-		[$e:expr] => {{
-			self.queue.push_back(($e) as u8);
+		[$($e:expr),*] => {{
+			$(self.queue.push_back(($e) as u8);)*
 			return true;
-		}};
-		[$e:expr,$($next:expr),*] => {{
-			self.queue.push_back(($e) as u8);
-			b![$($next),*];
 		}};
 	}
 	
