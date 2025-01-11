@@ -4,6 +4,7 @@ use std::collections::VecDeque;
 pub struct Assembler<InputType: Iterator<Item = Instruction>> {
 	input: InputType,
 	enable_undocumented_instructions: bool,
+	has_error_occured: bool,
 	queue: VecDeque<u8>
 }
 
@@ -13,9 +14,13 @@ Assembler<InputType> {
 		Self {
 			input: input,
 			enable_undocumented_instructions: enable_undocumented_instructions,
+			has_error_occured: false,
 			queue: VecDeque::with_capacity(4)
 		}
 	}
+
+	pub fn has_error_occured(&self) -> bool
+	{ return self.has_error_occured; }
 
 	fn get_r_value(&self, r: ByteRegister) -> u8 {
 		use ByteRegister::*;
@@ -654,6 +659,7 @@ Iterator for Assembler<InputType> {
 			None => { return None; }
 			Some(inst) => {
 				if !self.convert_instruction(inst) {
+					self.has_error_occured = true;
 					return None;
 				}
 			}
