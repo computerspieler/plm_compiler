@@ -601,7 +601,7 @@ Assembler<InputType> {
 		CALL(None, Constant(nn))	if nn >= 0 && nn < 0x10000
 			=> b![0xCD, nn & 0xFF, (nn >> 8) & 0xFF],
 		CALL(Some(cc), Constant(nn))	if nn >= 0 && nn < 0x10000
-			=> b![0xC8 | self.get_cc_value(cc) << 3, nn & 0xFF, (nn >> 8) & 0xFF],
+			=> b![0xC4 | self.get_cc_value(cc) << 3, nn & 0xFF, (nn >> 8) & 0xFF],
 
 		RET(None) 				 => b![0xC9],
 		RET(Some(cc)) => b![0xC0 | (self.get_cc_value(cc) << 3)],
