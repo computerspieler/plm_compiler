@@ -112,12 +112,11 @@ Assembler<InputType> {
 		use Operand::*;
 		
 		match inst {
-		LD(ByteRegister(r), AddressRegister(IX)) => { LD(ByteRegister(r), AddressRegisterWithOffset(IX, 0)) },
-		LD(ByteRegister(r), AddressRegister(IY)) => { LD(ByteRegister(r), AddressRegisterWithOffset(IY, 0)) },
-		LD(AddressRegister(IX), ByteRegister(r)) => { LD(AddressRegisterWithOffset(IX, 0), ByteRegister(r)) },
-		LD(AddressRegister(IY), ByteRegister(r)) => { LD(AddressRegisterWithOffset(IY, 0), ByteRegister(r)) },
-		LD(AddressRegister(IX), Constant(n)) => { LD(AddressRegisterWithOffset(IX, 0), Constant(n)) },
-		LD(AddressRegister(IY), Constant(n)) => { LD(AddressRegisterWithOffset(IY, 0), Constant(n)) },
+		LD(arg, AddressRegister(IX)) => { LD(arg, AddressRegisterWithOffset(IX, 0)) },
+		LD(arg, AddressRegister(IY)) => { LD(arg, AddressRegisterWithOffset(IY, 0)) },
+		LD(AddressRegister(IX), arg) => { LD(AddressRegisterWithOffset(IX, 0), arg) },
+		LD(AddressRegister(IY), arg) => { LD(AddressRegisterWithOffset(IY, 0), arg) },
+		
 		ADD(ByteRegister(A), AddressRegister(IX)) => { ADD(ByteRegister(A), AddressRegisterWithOffset(IX, 0)) },
 		ADD(ByteRegister(A), AddressRegister(IY)) => { ADD(ByteRegister(A), AddressRegisterWithOffset(IY, 0)) },
 		ADC(ByteRegister(A), AddressRegister(IX)) => { ADC(ByteRegister(A), AddressRegisterWithOffset(IX, 0)) },
@@ -126,6 +125,7 @@ Assembler<InputType> {
 		SBC(ByteRegister(A), AddressRegister(IY)) => { SBC(ByteRegister(A), AddressRegisterWithOffset(IY, 0)) },
 		SUB(AddressRegister(IX)) => { SUB(AddressRegisterWithOffset(IX, 0)) },
 		SUB(AddressRegister(IY)) => { SUB(AddressRegisterWithOffset(IY, 0)) },
+		
 		AND(AddressRegister(IX)) => { AND(AddressRegisterWithOffset(IX, 0)) },
 		AND(AddressRegister(IY)) => { AND(AddressRegisterWithOffset(IY, 0)) },
 		XOR(AddressRegister(IX)) => { XOR(AddressRegisterWithOffset(IX, 0)) },
@@ -150,8 +150,11 @@ Assembler<InputType> {
 		RR(AddressRegister(IY)) => { RR(AddressRegisterWithOffset(IY, 0)) },
 		SLA(AddressRegister(IX)) => { SLA(AddressRegisterWithOffset(IX, 0)) },
 		SLA(AddressRegister(IY)) => { SLA(AddressRegisterWithOffset(IY, 0)) },
+		SLL(AddressRegister(IX)) => { SLL(AddressRegisterWithOffset(IX, 0)) },
+		SLL(AddressRegister(IY)) => { SLL(AddressRegisterWithOffset(IY, 0)) },
 		SRL(AddressRegister(IX)) => { SRL(AddressRegisterWithOffset(IX, 0)) },
 		SRL(AddressRegister(IY)) => { SRL(AddressRegisterWithOffset(IY, 0)) },
+		
 		BIT(b, AddressRegister(IX)) => { BIT(b, AddressRegisterWithOffset(IX, 0)) },
 		BIT(b, AddressRegister(IY)) => { BIT(b, AddressRegisterWithOffset(IY, 0)) },
 		RES(b, AddressRegister(IX)) => { RES(b, AddressRegisterWithOffset(IX, 0)) },
@@ -166,9 +169,10 @@ Assembler<InputType> {
     fn convert_undocumented_instruction(&mut self, inst: Instruction) -> bool
     {
 		use Instruction::*;
-		use crate::instruction::WordRegister::*;
-		use crate::instruction::ByteRegister;
 		use Operand::*;
+		use crate::instruction::ByteRegister;
+		use crate::instruction::UndocumentedRegister::*;
+		use crate::instruction::WordRegister::*;
 		
 		macro_rules! b {
 			[$e:expr] => {{
@@ -181,6 +185,17 @@ Assembler<InputType> {
 			}};
 		}
 
+		macro_rules! ixx_instruction {
+			($r: ident| $($before:expr),*;$eh:literal,$el:literal; $($next:expr),*) => {
+				match $r {
+				IXH => b![0xDD, $($before,)* $eh $(,$next)*],
+				IXL => b![0xDD, $($before,)* $el $(,$next)*],
+				IYH => b![0xFD, $($before,)* $eh $(,$next)*],
+				IYL => b![0xFD, $($before,)* $el $(,$next)*],
+				}
+			}
+		}
+
         match inst {
 		SLL(ByteRegister(r))		  			=> b![0xCB, 0x30 | self.get_r_value(r)],
 		SLL(AddressRegister(HL))				  			=> b![0xCB, 0x36],
@@ -189,6 +204,56 @@ Assembler<InputType> {
 		OUT(PortRegister(ByteRegister::C), Constant(0))		=> b![0xED, 71],
 		IN(F,PortRegister(ByteRegister::C))	=> b![0xED, 0x70],
 
+		/* IXx/IYx instructions */
+		ADD(ByteRegister(ByteRegister::A), UndocumentedRegister(r))
+			=> ixx_instruction!(r| ;0x84,0x85;),
+		ADC(ByteRegister(ByteRegister::A), UndocumentedRegister(r))
+			=> ixx_instruction!(r| ;0x8C,0x8D;),
+		INC(UndocumentedRegister(r))	=> ixx_instruction!(r| ;0x24,0x2C;),
+		SUB(UndocumentedRegister(r))	=> ixx_instruction!(r| ;0x94,0x95;),
+		SBC(ByteRegister(ByteRegister::A), UndocumentedRegister(r))
+			=> ixx_instruction!(r| ;0x9C,0x9D;),
+		DEC(UndocumentedRegister(r))	=> ixx_instruction!(r| ;0x25,0x2D;),
+		
+		AND(UndocumentedRegister(r))	=> ixx_instruction!(r| ;0xA4,0xA5;),
+		OR(UndocumentedRegister(r))	=> ixx_instruction!(r| ;0xB4,0xB5;),
+		XOR(UndocumentedRegister(r))	=> ixx_instruction!(r| ;0xAC,0xAD;),
+		CP(UndocumentedRegister(r))	=> ixx_instruction!(r| ;0xBC,0xBD;),
+		
+		LD(UndocumentedRegister(r), Constant(n)) if n >= -128 && n < 256
+			=> ixx_instruction!(r| ;0x26,0x2E; n),
+		LD(ByteRegister(ByteRegister::A), UndocumentedRegister(r))
+			=> ixx_instruction!(r| ;0x7C,0x7D; ),
+		LD(ByteRegister(ByteRegister::B), UndocumentedRegister(r))
+			=> ixx_instruction!(r| ;0x44,0x45; ),
+		LD(ByteRegister(ByteRegister::C), UndocumentedRegister(r))
+			=> ixx_instruction!(r| ;0x4C,0x4D; ),
+		LD(ByteRegister(ByteRegister::D), UndocumentedRegister(r))
+			=> ixx_instruction!(r| ;0x54,0x55; ),
+		LD(ByteRegister(ByteRegister::E), UndocumentedRegister(r))
+			=> ixx_instruction!(r| ;0x5C,0x5D; ),
+
+		LD(UndocumentedRegister(r), ByteRegister(ByteRegister::A))
+			=> ixx_instruction!(r| ;0x67,0x6F; ),
+		LD(UndocumentedRegister(r), ByteRegister(ByteRegister::B))
+			=> ixx_instruction!(r| ;0x60,0x68; ),
+		LD(UndocumentedRegister(r), ByteRegister(ByteRegister::C))
+			=> ixx_instruction!(r| ;0x61,0x69; ),
+		LD(UndocumentedRegister(r), ByteRegister(ByteRegister::D))
+			=> ixx_instruction!(r| ;0x62,0x6A; ),
+		LD(UndocumentedRegister(r), ByteRegister(ByteRegister::E))
+			=> ixx_instruction!(r| ;0x63,0x6B; ),
+		
+		LD(UndocumentedRegister(IXH), UndocumentedRegister(IXH)) => b![0xDD, 0x64],
+		LD(UndocumentedRegister(IXH), UndocumentedRegister(IXL)) => b![0xDD, 0x65],
+		LD(UndocumentedRegister(IXL), UndocumentedRegister(IXH)) => b![0xDD, 0x6C],
+		LD(UndocumentedRegister(IXL), UndocumentedRegister(IXL)) => b![0xDD, 0x6D],
+
+		LD(UndocumentedRegister(IYH), UndocumentedRegister(IYH)) => b![0xFD, 0x64],
+		LD(UndocumentedRegister(IYH), UndocumentedRegister(IYL)) => b![0xFD, 0x65],
+		LD(UndocumentedRegister(IYL), UndocumentedRegister(IYH)) => b![0xFD, 0x6C],
+		LD(UndocumentedRegister(IYL), UndocumentedRegister(IYL)) => b![0xFD, 0x6D],
+		
 		_ => {
 			println!("Error, Invalid instruction: {:?}", inst);
 			return false;

@@ -13,6 +13,12 @@ pub enum WordRegister {
 }
 
 #[derive(Debug, Clone)]
+pub enum UndocumentedRegister {
+	IXH, IXL,
+	IYH, IYL,
+}
+
+#[derive(Debug, Clone)]
 pub enum Operand {
 	Constant(i32),
 	Address(u16),
@@ -23,8 +29,7 @@ pub enum Operand {
 	AddressRegister(WordRegister),
 	AddressRegisterWithOffset(WordRegister, i8),
 	
-	IXH, IXL,
-	IYH, IYL,
+	UndocumentedRegister(UndocumentedRegister),
 	I, R,
 	F
 }
