@@ -1,21 +1,36 @@
 #[derive(Debug, Clone)]
 pub enum ByteRegister {
-	A, B, C, D, E, H, L
+	A,
+	B,
+	C,
+	D,
+	E,
+	H,
+	L,
 }
 
 #[derive(Debug, Clone)]
 pub enum WordRegister {
-	AF, BC, DE, HL,
+	AF,
+	BC,
+	DE,
+	HL,
 	// Since we can't have prime, i'll use underscores
-	AF_, BC_, DE_, HL_,
-	IX, IY,
-	SP
+	AF_,
+	BC_,
+	DE_,
+	HL_,
+	IX,
+	IY,
+	SP,
 }
 
 #[derive(Debug, Clone)]
 pub enum UndocumentedRegister {
-	IXH, IXL,
-	IYH, IYL,
+	IXH,
+	IXL,
+	IYH,
+	IYL,
 }
 
 #[derive(Debug, Clone)]
@@ -28,18 +43,23 @@ pub enum Operand {
 	PortRegister(ByteRegister),
 	AddressRegister(WordRegister),
 	AddressRegisterWithOffset(WordRegister, i8),
-	
+
 	UndocumentedRegister(UndocumentedRegister),
-	I, R,
-	F
+	I,
+	R,
+	F,
 }
 
 #[derive(Debug, Clone)]
 pub enum Condition {
-	Z, NZ,
-	C, NC,
-	PO, PE,
-	P, M
+	Z,
+	NZ,
+	C,
+	NC,
+	PO,
+	PE,
+	P,
+	M,
 }
 
 #[derive(Debug, Clone)]
@@ -100,12 +120,12 @@ pub enum Instruction {
 	BIT(u8, Operand),
 	SET(u8, Operand),
 	RES(u8, Operand),
-	
+
 	JP(Option<Condition>, Operand),
 	JR(Option<Condition>, Operand),
 
 	DJNZ(i8),
-	
+
 	CALL(Option<Condition>, Operand),
 	RET(Option<Condition>),
 	RETI,
@@ -124,5 +144,5 @@ pub enum Instruction {
 	OTDR,
 
 	/* This is Assembler specific */
-	Binary(Vec<u8>)
+	Binary(Vec<u8>),
 }

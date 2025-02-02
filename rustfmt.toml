@@ -1,0 +1,11 @@
+overflow_delimited_expr = true
+indent_style = "Block"
+reorder_imports = true
+hard_tabs = true
+edition = "2021"
+hex_literal_case = "Upper"
+fn_single_line = false
+force_explicit_abi = true
+merge_derives = true
+match_arm_leading_pipes = "Always"
+

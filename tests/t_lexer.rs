@@ -3,8 +3,10 @@ use plm::lexer::*;
 macro_rules! assert_token {
 	($lexer: ident, $val: pat) => {
 		match $lexer.next() {
-		$val => {}
-		_ => { assert!(false) }
+			| $val => {}
+			| _ => {
+				assert!(false)
+			}
 		}
 	};
 }
@@ -12,15 +14,16 @@ macro_rules! assert_token {
 macro_rules! assert_identifier {
 	($lexer: ident, $val: literal) => {
 		match $lexer.next() {
-		Some((Token::Identifier(s), _)) => {
-			let outcome = (s.as_str() == $val);
-			if !outcome {
-				println!("Got \"{}\" when it was supposed to be \"{}\"",
-					s, $val);
+			| Some((Token::Identifier(s), _)) => {
+				let outcome = (s.as_str() == $val);
+				if !outcome {
+					println!("Got \"{}\" when it was supposed to be \"{}\"", s, $val);
+				}
+				assert!(outcome)
 			}
-			assert!(outcome)
-		}
-		_ => { assert!(false) }
+			| _ => {
+				assert!(false)
+			}
 		}
 	};
 }
@@ -192,7 +195,6 @@ fn test_invalid_number0() {
 	assert_token!(lexer, None)
 }
 
-
 #[test]
 fn test_invalid_number1() {
 	let mut lexer = Lexer::from_string("36:$".to_string());
@@ -201,13 +203,11 @@ fn test_invalid_number1() {
 	assert_token!(lexer, None)
 }
 
-
 #[test]
 fn test_invalid_number2() {
 	let mut lexer = Lexer::from_string("83ew".to_string());
 	assert_token!(lexer, None)
 }
-
 
 #[test]
 fn test_invalid_number3() {
@@ -215,13 +215,11 @@ fn test_invalid_number3() {
 	assert_token!(lexer, None)
 }
 
-
 #[test]
 fn test_invalid_number4() {
 	let mut lexer = Lexer::from_string("38lW".to_string());
 	assert_token!(lexer, None)
 }
-
 
 #[test]
 fn test_invalid_number5() {
@@ -229,20 +227,17 @@ fn test_invalid_number5() {
 	assert_token!(lexer, None)
 }
 
-
 #[test]
 fn test_invalid_number6() {
 	let mut lexer = Lexer::from_string("33wQ".to_string());
 	assert_token!(lexer, None)
 }
 
-
 #[test]
 fn test_invalid_number7() {
 	let mut lexer = Lexer::from_string("91IC".to_string());
 	assert_token!(lexer, None)
 }
-
 
 #[test]
 fn test_invalid_number8() {
@@ -251,7 +246,6 @@ fn test_invalid_number8() {
 	assert_token!(lexer, Some((Token::Slash, _)));
 	assert_token!(lexer, None)
 }
-
 
 #[test]
 fn test_invalid_number9() {
@@ -380,7 +374,8 @@ fn test_valid_identifier6() {
 
 #[test]
 fn test_valid_identifier7() {
-	let mut lexer = Lexer::from_string("tWFBPR8v1hFploLU6z8OvZIXUVfDhh$yYSGUl4alsjMkoEsJS".to_string());
+	let mut lexer =
+		Lexer::from_string("tWFBPR8v1hFploLU6z8OvZIXUVfDhh$yYSGUl4alsjMkoEsJS".to_string());
 	assert_identifier!(lexer, "TWFBPR8V1HFPLOLU6Z8OVZIXUVFDHHYYSGUL4ALSJMKOESJS");
 	assert_token!(lexer, None)
 }
@@ -394,7 +389,8 @@ fn test_valid_identifier8() {
 
 #[test]
 fn test_valid_identifier9() {
-	let mut lexer = Lexer::from_string("siS8dbRgE$yi0P47zkW02GyYVbJ5$881ahHBonqwNlD$mMrr5".to_string());
+	let mut lexer =
+		Lexer::from_string("siS8dbRgE$yi0P47zkW02GyYVbJ5$881ahHBonqwNlD$mMrr5".to_string());
 	assert_identifier!(lexer, "SIS8DBRGEYI0P47ZKW02GYYVBJ5881AHHBONQWNLDMMRR5");
 	assert_token!(lexer, None)
 }
@@ -408,7 +404,8 @@ fn test_valid_identifier10() {
 
 #[test]
 fn test_valid_identifier11() {
-	let mut lexer = Lexer::from_string("L5cHqWpT3e31pLqeNdCns1J0DORsJsXQoznV13qyj1hRdW".to_string());
+	let mut lexer =
+		Lexer::from_string("L5cHqWpT3e31pLqeNdCns1J0DORsJsXQoznV13qyj1hRdW".to_string());
 	assert_identifier!(lexer, "L5CHQWPT3E31PLQENDCNS1J0DORSJSXQOZNV13QYJ1HRDW");
 	assert_token!(lexer, None)
 }
@@ -429,7 +426,8 @@ fn test_valid_identifier13() {
 
 #[test]
 fn test_valid_identifier14() {
-	let mut lexer = Lexer::from_string("Txg9Vw1WsW$fa6G2hbQTvA1ljJXB5SgKqSotoO$khMfm2Ig9".to_string());
+	let mut lexer =
+		Lexer::from_string("Txg9Vw1WsW$fa6G2hbQTvA1ljJXB5SgKqSotoO$khMfm2Ig9".to_string());
 	assert_identifier!(lexer, "TXG9VW1WSWFA6G2HBQTVA1LJJXB5SGKQSOTOOKHMFM2IG9");
 	assert_token!(lexer, None)
 }
@@ -450,7 +448,8 @@ fn test_valid_identifier16() {
 
 #[test]
 fn test_valid_identifier17() {
-	let mut lexer = Lexer::from_string("gFpW$3BGnzTip9s6ymQMr5LK6R2jCvtcZnKTDgOSpP9Zov".to_string());
+	let mut lexer =
+		Lexer::from_string("gFpW$3BGnzTip9s6ymQMr5LK6R2jCvtcZnKTDgOSpP9Zov".to_string());
 	assert_identifier!(lexer, "GFPW3BGNZTIP9S6YMQMR5LK6R2JCVTCZNKTDGOSPP9ZOV");
 	assert_token!(lexer, None)
 }
@@ -464,8 +463,13 @@ fn test_valid_identifier18() {
 
 #[test]
 fn test_valid_identifier19() {
-	let mut lexer = Lexer::from_string("Pi$0gfqxqnFXnnPNBhOgWBajgAueURpp0JsnbNiCiQPLQq1Q$x2L01o3c1P6VY".to_string());
-	assert_identifier!(lexer, "PI0GFQXQNFXNNPNBHOGWBAJGAUEURPP0JSNBNICIQPLQQ1QX2L01O3C1P6VY");
+	let mut lexer = Lexer::from_string(
+		"Pi$0gfqxqnFXnnPNBhOgWBajgAueURpp0JsnbNiCiQPLQq1Q$x2L01o3c1P6VY".to_string(),
+	);
+	assert_identifier!(
+		lexer,
+		"PI0GFQXQNFXNNPNBHOGWBAJGAUEURPP0JSNBNICIQPLQQ1QX2L01O3C1P6VY"
+	);
 	assert_token!(lexer, None)
 }
 
@@ -499,8 +503,14 @@ fn test_valid_identifier23() {
 
 #[test]
 fn test_valid_identifier24() {
-	let mut lexer = Lexer::from_string("cGKZ1bfEdjOWH0nEeS3y7N6l3idEJY3gRVKMcNv6Jegis6b6vQE0223jz4LvDwLNSF4SXkhjWT70sbIoXB$z".to_string());
-	assert_identifier!(lexer, "CGKZ1BFEDJOWH0NEES3Y7N6L3IDEJY3GRVKMCNV6JEGIS6B6VQE0223JZ4LVDWLNSF4SXKHJWT70SBIOXBZ");
+	let mut lexer = Lexer::from_string(
+		"cGKZ1bfEdjOWH0nEeS3y7N6l3idEJY3gRVKMcNv6Jegis6b6vQE0223jz4LvDwLNSF4SXkhjWT70sbIoXB$z"
+			.to_string(),
+	);
+	assert_identifier!(
+		lexer,
+		"CGKZ1BFEDJOWH0NEES3Y7N6L3IDEJY3GRVKMCNV6JEGIS6B6VQE0223JZ4LVDWLNSF4SXKHJWT70SBIOXBZ"
+	);
 	assert_token!(lexer, None)
 }
 
@@ -527,8 +537,14 @@ fn test_valid_identifier27() {
 
 #[test]
 fn test_valid_identifier28() {
-	let mut lexer = Lexer::from_string("w2XN4CGvZJwG7yPm1rakGELxEtWljoafmtfc4eorLqR8X1oA7Tun6GUgKnEeAbupjtYI4Jmd8oHD8Da8cO".to_string());
-	assert_identifier!(lexer, "W2XN4CGVZJWG7YPM1RAKGELXETWLJOAFMTFC4EORLQR8X1OA7TUN6GUGKNEEABUPJTYI4JMD8OHD8DA8CO");
+	let mut lexer = Lexer::from_string(
+		"w2XN4CGvZJwG7yPm1rakGELxEtWljoafmtfc4eorLqR8X1oA7Tun6GUgKnEeAbupjtYI4Jmd8oHD8Da8cO"
+			.to_string(),
+	);
+	assert_identifier!(
+		lexer,
+		"W2XN4CGVZJWG7YPM1RAKGELXETWLJOAFMTFC4EORLQR8X1OA7TUN6GUGKNEEABUPJTYI4JMD8OHD8DA8CO"
+	);
 	assert_token!(lexer, None)
 }
 
@@ -562,8 +578,13 @@ fn test_valid_identifier32() {
 
 #[test]
 fn test_valid_identifier33() {
-	let mut lexer = Lexer::from_string("HMIlliUD1vapX7RkKnhrqy5Ovc9Te2U3960qRwpEUzI375GJajWsw22Ok8j$vkMJp6caJQ".to_string());
-	assert_identifier!(lexer, "HMILLIUD1VAPX7RKKNHRQY5OVC9TE2U3960QRWPEUZI375GJAJWSW22OK8JVKMJP6CAJQ");
+	let mut lexer = Lexer::from_string(
+		"HMIlliUD1vapX7RkKnhrqy5Ovc9Te2U3960qRwpEUzI375GJajWsw22Ok8j$vkMJp6caJQ".to_string(),
+	);
+	assert_identifier!(
+		lexer,
+		"HMILLIUD1VAPX7RKKNHRQY5OVC9TE2U3960QRWPEUZI375GJAJWSW22OK8JVKMJP6CAJQ"
+	);
 	assert_token!(lexer, None)
 }
 
@@ -576,14 +597,20 @@ fn test_valid_identifier34() {
 
 #[test]
 fn test_valid_identifier35() {
-	let mut lexer = Lexer::from_string("JprZRv$vS9tKFIVlSPy2KbCv0Df9jxMVTJSGStS6JhQctCNIpcMc82PSlbgsa$3tSsXR".to_string());
-	assert_identifier!(lexer, "JPRZRVVS9TKFIVLSPY2KBCV0DF9JXMVTJSGSTS6JHQCTCNIPCMC82PSLBGSA3TSSXR");
+	let mut lexer = Lexer::from_string(
+		"JprZRv$vS9tKFIVlSPy2KbCv0Df9jxMVTJSGStS6JhQctCNIpcMc82PSlbgsa$3tSsXR".to_string(),
+	);
+	assert_identifier!(
+		lexer,
+		"JPRZRVVS9TKFIVLSPY2KBCV0DF9JXMVTJSGSTS6JHQCTCNIPCMC82PSLBGSA3TSSXR"
+	);
 	assert_token!(lexer, None)
 }
 
 #[test]
 fn test_valid_identifier36() {
-	let mut lexer = Lexer::from_string("G2$36FHxbQFWYQ4olA92yzYCfx3IRtWEtBMPyEWx3yVA2gIuT".to_string());
+	let mut lexer =
+		Lexer::from_string("G2$36FHxbQFWYQ4olA92yzYCfx3IRtWEtBMPyEWx3yVA2gIuT".to_string());
 	assert_identifier!(lexer, "G236FHXBQFWYQ4OLA92YZYCFX3IRTWETBMPYEWX3YVA2GIUT");
 	assert_token!(lexer, None)
 }
@@ -597,8 +624,14 @@ fn test_valid_identifier37() {
 
 #[test]
 fn test_valid_identifier38() {
-	let mut lexer = Lexer::from_string("DbyqAJTkjijfCatJIp0c9gLc83vu1a5NqPClWnC0HPXsj9PhaLWXx6LGqPsDMvE8$OubZp3VuXTFr0UIaHLuz".to_string());
-	assert_identifier!(lexer, "DBYQAJTKJIJFCATJIP0C9GLC83VU1A5NQPCLWNC0HPXSJ9PHALWXX6LGQPSDMVE8OUBZP3VUXTFR0UIAHLUZ");
+	let mut lexer = Lexer::from_string(
+		"DbyqAJTkjijfCatJIp0c9gLc83vu1a5NqPClWnC0HPXsj9PhaLWXx6LGqPsDMvE8$OubZp3VuXTFr0UIaHLuz"
+			.to_string(),
+	);
+	assert_identifier!(
+		lexer,
+		"DBYQAJTKJIJFCATJIP0C9GLC83VU1A5NQPCLWNC0HPXSJ9PHALWXX6LGQPSDMVE8OUBZP3VUXTFR0UIAHLUZ"
+	);
 	assert_token!(lexer, None)
 }
 
@@ -619,10 +652,7 @@ fn test_valid_identifier40() {
 #[test]
 fn test_valid_macro0() {
 	let mut lexer = Lexer::from_string("CR".to_string());
-	lexer.add_macro("CR".to_string(), 
-		Position::zero(),
-		"10".to_string()
-	);
+	lexer.add_macro("CR".to_string(), Position::zero(), "10".to_string());
 	assert_token!(lexer, Some((Token::Number(10), _)));
 	assert_token!(lexer, None)
 }
@@ -630,14 +660,8 @@ fn test_valid_macro0() {
 #[test]
 fn test_valid_macro1() {
 	let mut lexer = Lexer::from_string("CR LF".to_string());
-	lexer.add_macro("CR".to_string(), 
-		Position::zero(),
-		"10".to_string()
-	);
-	lexer.add_macro("LF".to_string(), 
-		Position::zero(),
-		"14".to_string()
-	);
+	lexer.add_macro("CR".to_string(), Position::zero(), "10".to_string());
+	lexer.add_macro("LF".to_string(), Position::zero(), "14".to_string());
 	assert_token!(lexer, Some((Token::Number(10), _)));
 	assert_token!(lexer, Some((Token::Number(14), _)));
 	assert_token!(lexer, None)
@@ -646,18 +670,9 @@ fn test_valid_macro1() {
 #[test]
 fn test_valid_macro2() {
 	let mut lexer = Lexer::from_string("CRLF".to_string());
-	lexer.add_macro("CR".to_string(), 
-		Position::zero(),
-		"10".to_string()
-	);
-	lexer.add_macro("LF".to_string(), 
-		Position::zero(),
-		"14".to_string()
-	);
-	lexer.add_macro("CRLF".to_string(), 
-		Position::zero(),
-		"CR LF".to_string()
-	);
+	lexer.add_macro("CR".to_string(), Position::zero(), "10".to_string());
+	lexer.add_macro("LF".to_string(), Position::zero(), "14".to_string());
+	lexer.add_macro("CRLF".to_string(), Position::zero(), "CR LF".to_string());
 	assert_token!(lexer, Some((Token::Number(10), _)));
 	assert_token!(lexer, Some((Token::Number(14), _)));
 	assert_token!(lexer, None)

@@ -18,19 +18,19 @@ pub enum BinaryOperation {
 	GreaterOrEqual,
 	LessOrEqual,
 	Equal,
-	NotEqual
+	NotEqual,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum UnaryOperation {
 	Not,
-	ExtractAddress
+	ExtractAddress,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Variable {
 	ArrayIndex(String, Box<Expression>),
-	Variable(String)
+	Variable(String),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -38,7 +38,7 @@ pub enum VariableInitialValue {
 	Value(i32),
 	Array(Vec<i32>),
 	ReadOnlyArray(Vec<i32>),
-	ValueOfPointer(String)
+	ValueOfPointer(String),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -60,17 +60,17 @@ pub enum Expression {
 	FunctionCall(String, Vec<Expression>),
 	Constant(i32),
 	VariableAssignment(Variable, Box<Expression>),
-	AddressOfConstant(VariableInitialValue)
+	AddressOfConstant(VariableInitialValue),
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum Type  {
+pub enum Type {
 	Byte(usize),
 	Address(usize),
-	Data,	// It's like byte(n), but n is unknown
-	Macro,	// This one is just used by the compiler
-	Void	// Used for precedure who doesn't return anything
-} 
+	Data,  // It's like byte(n), but n is unknown
+	Macro, // This one is just used by the compiler
+	Void,  // Used for precedure who doesn't return anything
+}
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Statement {
@@ -92,5 +92,5 @@ pub enum Statement {
 	Label(String),
 	Procedure(Vec<String>, Type, Box<Statement>),
 	EndOfFile,
-	NoOperation
+	NoOperation,
 }

@@ -4,35 +4,46 @@ pub enum Token {
 	Number(i32),
 	String(String),
 	Keyword(&'static str),
-	
+
 	Dot,
-	LParan, RParan,
-	Plus, Minus,
-	Star, Slash,
+	LParan,
+	RParan,
+	Plus,
+	Minus,
+	Star,
+	Slash,
 	Comma,
-	Equal, NotEqual,
-	Greater, Less,
-	GreaterEqual, LessEqual,
-	SemiColon, Colon
+	Equal,
+	NotEqual,
+	Greater,
+	Less,
+	GreaterEqual,
+	LessEqual,
+	SemiColon,
+	Colon,
 }
 
 impl Token {
 	pub fn to_string(&self) -> String {
 		match self {
-		Token::Identifier(s) => { s.clone() }
-		Token::Keyword(s) => { s.to_string() }
-		Token::Number(x) => { x.to_string() }
-		Token::String(s) => { s.clone() }
-		
-		_ => { panic!("No stringyfication for the token {:?}", self) }
+			| Token::Identifier(s) => s.clone(),
+			| Token::Keyword(s) => s.to_string(),
+			| Token::Number(x) => x.to_string(),
+			| Token::String(s) => s.clone(),
+
+			| _ => {
+				panic!("No stringyfication for the token {:?}", self)
+			}
 		}
 	}
 
 	pub fn to_int(&self) -> i32 {
 		match self {
-		Token::Number(x) => { *x }
+			| Token::Number(x) => *x,
 
-		_ => { panic!("No conversion to an integer for the token {:?}", self) }
+			| _ => {
+				panic!("No conversion to an integer for the token {:?}", self)
+			}
 		}
 	}
 }
@@ -78,15 +89,12 @@ static KEYWORDS: [&'static str; KEYWORDS_COUNT] = [
 #[derive(Clone, Copy, Debug)]
 pub struct Position {
 	line: usize,
-	column: usize
+	column: usize,
 }
 
 impl Position {
 	pub fn zero() -> Self {
-		Self {
-			line: 0,
-			column: 0
-		}
+		Self { line: 0, column: 0 }
 	}
 }
 
@@ -96,19 +104,22 @@ impl std::fmt::Display for Position {
 	}
 }
 
-fn print_error<T: std::fmt::Debug>(pos: Position, file_error: Option<ErrorKind>, lexer_error: Option<T>) {
+fn print_error<T: std::fmt::Debug>(
+	pos: Position,
+	file_error: Option<ErrorKind>,
+	lexer_error: Option<T>,
+) {
 	match file_error {
-	Some(ErrorKind::UnexpectedEof) |
-	None => {}
-	Some(e) => {
-		println!("Error while reading at {}: {}", pos, e.to_string());
-	}
+		| Some(ErrorKind::UnexpectedEof) | None => {}
+		| Some(e) => {
+			println!("Error while reading at {}: {}", pos, e.to_string());
+		}
 	}
 	match lexer_error {
-	None => {}
-	Some(x) => {
-		println!("Lexing error at {}: {:?}", pos, x);
-	}
+		| None => {}
+		| Some(x) => {
+			println!("Lexing error at {}: {:?}", pos, x);
+		}
 	}
 }
 
@@ -118,7 +129,7 @@ impl Token {
 
 		// If it's an identifier
 		if Token::is_alphabetic(str.chars().nth(0).unwrap()) {
-			for i in 0 .. KEYWORDS_COUNT {
+			for i in 0..KEYWORDS_COUNT {
 				if KEYWORDS[i] == str {
 					return Some((Token::Keyword(KEYWORDS[i]), pos));
 				}
@@ -130,35 +141,34 @@ impl Token {
 		// If it's a value
 		if Token::is_numeric(str.chars().nth(0).unwrap()) {
 			let n = str.len();
-			
-			let has_radix =
-				"bBoOqQdDhH".contains(str.chars().nth(n-1).unwrap_or('\0'));
-			let radixless_value =
-				if has_radix { &str[0 .. n-1] }
-				else { &str[0 .. n] };
 
-			let radix =
-				if !has_radix { 10 }
-				else {
-					match str.chars().nth(n-1).unwrap() {
-					'b' | 'B' => { 2 }
-					'q' | 'Q' |
-					'o' | 'O' => { 8 }
-					'd' | 'D' => { 10 }
-					'h' | 'H' => { 16 }
-					_ => { 10 }
-					}
-				};
+			let has_radix = "bBoOqQdDhH".contains(str.chars().nth(n - 1).unwrap_or('\0'));
+			let radixless_value = if has_radix {
+				&str[0..n - 1]
+			} else {
+				&str[0..n]
+			};
+
+			let radix = if !has_radix {
+				10
+			} else {
+				match str.chars().nth(n - 1).unwrap() {
+					| 'b' | 'B' => 2,
+					| 'q' | 'Q' | 'o' | 'O' => 8,
+					| 'd' | 'D' => 10,
+					| 'h' | 'H' => 16,
+					| _ => 10,
+				}
+			};
 
 			match i32::from_str_radix(radixless_value, radix) {
-			Err(e)  => {
-				print_error(pos, None, Some(e.kind()));
-				None
+				| Err(e) => {
+					print_error(pos, None, Some(e.kind()));
+					None
+				}
+				| Ok(x) => Some((Token::Number(x), pos)),
 			}
-			Ok(x) => { Some((Token::Number(x), pos)) }
-			}
-		} 
-		else {
+		} else {
 			return None;
 		}
 	}
@@ -186,7 +196,7 @@ pub struct Lexer {
 	macros: Vec<Vec<(Token, Position)>>,
 	running_macro: Option<(usize, usize)>,
 
-	peeked_token: Option<Option<(Token, Position)>>
+	peeked_token: Option<Option<(Token, Position)>>,
 }
 
 impl Lexer {
@@ -195,16 +205,13 @@ impl Lexer {
 			input_file: Some(f),
 			input_string: None,
 			stash: None,
-			cursor_position: Position {
-				line: 1,
-				column: 0
-			},
+			cursor_position: Position { line: 1, column: 0 },
 
 			macros_idx: HashMap::new(),
 			macros: Vec::new(),
 			running_macro: None,
 
-			peeked_token: None
+			peeked_token: None,
 		}
 	}
 
@@ -213,15 +220,12 @@ impl Lexer {
 			input_file: None,
 			input_string: Some((str.into_bytes(), 0)),
 			stash: None,
-			cursor_position: Position {
-				line: 1,
-				column: 0
-			},
+			cursor_position: Position { line: 1, column: 0 },
 			macros_idx: HashMap::new(),
 			macros: Vec::new(),
 			running_macro: None,
 
-			peeked_token: None
+			peeked_token: None,
 		}
 	}
 
@@ -234,7 +238,7 @@ impl Lexer {
 			}
 			buf[0] = input_str[*pos];
 			*pos += 1;
-			return Ok(1); 
+			return Ok(1);
 		} else {
 			return Err(Error::from(ErrorKind::InvalidInput));
 		}
@@ -247,43 +251,48 @@ impl Lexer {
 		}
 
 		let mut buf = [0 as u8; 1];
-		
-		match self.next_byte(&mut buf) {
-		Err(e) => { return (Err(e), self.cursor_position); }
-		Ok(n) => {
-			if n == 0 {
-				return (Err(Error::from(ErrorKind::UnexpectedEof)), self.cursor_position);
-			}
-			self.cursor_position.column += 1;
 
-			// Check if they are unicode
-			if buf[0] & 0x80 != 0 {
-				// If a byte starts with 10xxxxxx, it means
-				// that it's a byte for a character's encoding.
-				// It can be ignored
-				if buf[0] & 0xC0 == 0x80 {
-					self.cursor_position.column -= 1;
-					return self.next_character(format);
+		match self.next_byte(&mut buf) {
+			| Err(e) => {
+				return (Err(e), self.cursor_position);
+			}
+			| Ok(n) => {
+				if n == 0 {
+					return (
+						Err(Error::from(ErrorKind::UnexpectedEof)),
+						self.cursor_position,
+					);
+				}
+				self.cursor_position.column += 1;
+
+				// Check if they are unicode
+				if buf[0] & 0x80 != 0 {
+					// If a byte starts with 10xxxxxx, it means
+					// that it's a byte for a character's encoding.
+					// It can be ignored
+					if buf[0] & 0xC0 == 0x80 {
+						self.cursor_position.column -= 1;
+						return self.next_character(format);
+					} else {
+						// And ignore them, since they should be
+						// treated as whitespace
+						return (Ok(' '), self.cursor_position);
+					}
+				}
+
+				let c = buf[0] as char;
+
+				if c == '\n' {
+					self.cursor_position.line += 1;
+					self.cursor_position.column = 0;
+				}
+
+				if format {
+					return (Ok(c.to_ascii_uppercase()), self.cursor_position);
 				} else {
-					// And ignore them, since they should be
-					// treated as whitespace
-					return (Ok(' '), self.cursor_position);
+					return (Ok(c), self.cursor_position);
 				}
 			}
-
-			let c = buf[0] as char;
-
-			if c == '\n' {
-				self.cursor_position.line += 1;
-				self.cursor_position.column = 0;
-			}
-
-			if format {
-				return (Ok(c.to_ascii_uppercase()), self.cursor_position);
-			} else {
-				return (Ok(c), self.cursor_position);
-			}
-		}
 		}
 	}
 
@@ -309,11 +318,13 @@ impl Lexer {
 
 	fn launch_macro(&mut self, keyword: &String) -> bool {
 		match self.macros_idx.get(keyword) {
-		None => { return false; }
-		Some(x) => {
-			self.running_macro = Some((*x, 0));
-			return true;
-		}
+			| None => {
+				return false;
+			}
+			| Some(x) => {
+				self.running_macro = Some((*x, 0));
+				return true;
+			}
 		}
 	}
 
@@ -326,17 +337,15 @@ impl Lexer {
 
 	pub fn reached_eos(&mut self) -> bool {
 		match self.peek() {
-		Some(_) => { false }
-		None => {
-			let mut buf = [0 as u8; 1];
-		
-			match self.next_byte(&mut buf) {
-			Err(e) => {
-				e.kind() == ErrorKind::UnexpectedEof
+			| Some(_) => false,
+			| None => {
+				let mut buf = [0 as u8; 1];
+
+				match self.next_byte(&mut buf) {
+					| Err(e) => e.kind() == ErrorKind::UnexpectedEof,
+					| _ => false,
+				}
 			}
-			_ => { false }
-			}
-		}
 		}
 	}
 }
@@ -355,23 +364,22 @@ impl Iterator for Lexer {
 		}
 
 		match self.running_macro {
-		None => {}
-		Some((idx, pos)) => {
-			if pos >= self.macros[idx].len() {
-				self.running_macro = None;
-			} else {
-				self.running_macro = Some((idx, pos + 1));
-				return Some(self.macros[idx][pos].clone());
+			| None => {}
+			| Some((idx, pos)) => {
+				if pos >= self.macros[idx].len() {
+					self.running_macro = None;
+				} else {
+					self.running_macro = Some((idx, pos + 1));
+					return Some(self.macros[idx][pos].clone());
+				}
 			}
 		}
-		}
-		
+
 		let mut token_str = String::new();
 		let mut initial_pos: Option<Position> = None;
-		
+
 		loop {
-			let (c, pos) =
-				self.next_character(true);
+			let (c, pos) = self.next_character(true);
 			if let Err(e) = c {
 				print_error::<&str>(pos, Some(e.kind()), None);
 				if token_str.len() == 0 {
@@ -407,120 +415,156 @@ impl Iterator for Lexer {
 			}
 
 			match c {
-			'=' => { return Some((Token::Equal, pos)); }
-			'.' => { return Some((Token::Dot, pos)); }
-			'(' => { return Some((Token::LParan, pos)); }
-			')' => { return Some((Token::RParan, pos)); }
-			'+' => { return Some((Token::Plus, pos)); }
-			'-' => { return Some((Token::Minus, pos)); }
-			'*' => { return Some((Token::Star, pos)); }
-			',' => { return Some((Token::Comma, pos)); }
-			';' => { return Some((Token::SemiColon, pos)); }
-			':' => { return Some((Token::Colon, pos)); }
-			'/' => {
-				let (next_c, next_c_pos) =
-					self.next_character(true);
-				if let Ok('*') = next_c {
-					// We're in a comment
-					loop {
-						let (c, pos) =
-							self.next_character(false);
-						match c {
-						Ok('*') => {
-							let (c, pos) =
-								self.next_character(false);
+				| '=' => {
+					return Some((Token::Equal, pos));
+				}
+				| '.' => {
+					return Some((Token::Dot, pos));
+				}
+				| '(' => {
+					return Some((Token::LParan, pos));
+				}
+				| ')' => {
+					return Some((Token::RParan, pos));
+				}
+				| '+' => {
+					return Some((Token::Plus, pos));
+				}
+				| '-' => {
+					return Some((Token::Minus, pos));
+				}
+				| '*' => {
+					return Some((Token::Star, pos));
+				}
+				| ',' => {
+					return Some((Token::Comma, pos));
+				}
+				| ';' => {
+					return Some((Token::SemiColon, pos));
+				}
+				| ':' => {
+					return Some((Token::Colon, pos));
+				}
+				| '/' => {
+					let (next_c, next_c_pos) = self.next_character(true);
+					if let Ok('*') = next_c {
+						// We're in a comment
+						loop {
+							let (c, pos) = self.next_character(false);
 							match c {
-							Ok('/') => { break; }
-							Ok(_) => {}
-							Err(e) => {
-								print_error(pos, 
+								| Ok('*') => {
+									let (c, pos) = self.next_character(false);
+									match c {
+										| Ok('/') => {
+											break;
+										}
+										| Ok(_) => {}
+										| Err(e) => {
+											print_error(
+												pos,
+												Some(e.kind()),
+												Some("Still in unfinished comment"),
+											);
+											return None;
+										}
+									}
+								}
+								| Ok(_) => {}
+								| Err(e) => {
+									print_error(
+										pos,
+										Some(e.kind()),
+										Some("Still in unfinished comment"),
+									);
+									return None;
+								}
+							}
+						}
+						return self.next();
+					} else if let Ok(next_c) = next_c {
+						self.stash = Some((next_c, next_c_pos));
+					}
+					return Some((Token::Slash, pos));
+				}
+				| '>' => {
+					let (next_c, next_c_pos) = self.next_character(true);
+					if let Ok('=') = next_c {
+						return Some((Token::GreaterEqual, pos));
+					} else if let Ok(next_c) = next_c {
+						self.stash = Some((next_c, next_c_pos));
+					}
+					return Some((Token::Greater, pos));
+				}
+				| '<' => {
+					let (next_c, next_c_pos) = self.next_character(true);
+					if let Ok('=') = next_c {
+						return Some((Token::LessEqual, pos));
+					} else if let Ok('>') = next_c {
+						return Some((Token::NotEqual, pos));
+					} else if let Ok(next_c) = next_c {
+						self.stash = Some((next_c, next_c_pos));
+					}
+					return Some((Token::Less, pos));
+				}
+				| '\'' => {
+					loop {
+						let (c, pos) = self.next_character(false);
+						match c {
+							| Ok('\'') => {
+								break;
+							}
+							| Ok('\\') => {
+								// If it's a sequence
+								let (c, pos) = self.next_character(false);
+								match c {
+									| Ok('\\') => {
+										token_str.push('\\');
+									}
+									| Ok('\'') => {
+										token_str.push('\'');
+									}
+									| Ok('t') | Ok('T') => {
+										token_str.push('\t');
+									}
+									| Ok('r') | Ok('R') => {
+										token_str.push('\r');
+									}
+									| Ok('n') | Ok('N') => {
+										token_str.push('\n');
+									}
+									| Ok(c) => {
+										token_str.push('\\');
+										token_str.push(c);
+									}
+									| Err(e) => {
+										print_error(
+											pos,
+											Some(e.kind()),
+											Some("Still in unfinished string"),
+										);
+										return None;
+									}
+								}
+							}
+							| Ok(c) => {
+								token_str.push(c);
+							}
+							| Err(e) => {
+								print_error(
+									pos,
 									Some(e.kind()),
-									Some("Still in unfinished comment")
+									Some("Still in unfinished string"),
 								);
 								return None;
 							}
-							}
-						}
-						Ok(_) => {}
-						Err(e) => {
-							print_error(pos,
-					Some(e.kind()),
-					Some("Still in unfinished comment")
-							);
-							return None;
-						}
 						}
 					}
-					return self.next();
-				} else if let Ok(next_c) = next_c {
-					self.stash = Some((next_c, next_c_pos));
+					return Some((Token::String(token_str), pos));
 				}
-				return Some((Token::Slash, pos));
-			}
-			'>' => {
-				let (next_c, next_c_pos) =
-					self.next_character(true);
-				if let Ok('=') = next_c {
-					return Some((Token::GreaterEqual, pos));
-				} else if let Ok(next_c) = next_c {
-					self.stash = Some((next_c, next_c_pos));
-				}
-				return Some((Token::Greater, pos));
-			}
-			'<' => {
-				let (next_c, next_c_pos) =
-					self.next_character(true);
-				if let Ok('=') = next_c {
-					return Some((Token::LessEqual, pos));
-				} else if let Ok('>') = next_c {
-					return Some((Token::NotEqual, pos));
-				} else if let Ok(next_c) = next_c {
-					self.stash = Some((next_c, next_c_pos));
-				}
-				return Some((Token::Less, pos));
-			}
-			'\'' => {
-				loop {
-					let (c, pos) =
-						self.next_character(false);
-					match c {
-					Ok('\'') => { break; }
-					Ok('\\') => {
-						// If it's a sequence
-						let (c, pos) = self.next_character(false);
-						match c {
-						Ok('\\') => { token_str.push('\\'); }
-						Ok('\'') => { token_str.push('\''); }
-						Ok('t') | Ok('T') => { token_str.push('\t'); }
-						Ok('r') | Ok('R') => { token_str.push('\r'); }
-						Ok('n') | Ok('N') => { token_str.push('\n'); }
-						Ok(c) => {
-							token_str.push('\\');
-							token_str.push(c);
-						}
-						Err(e) => {
-							print_error(pos,
-								Some(e.kind()),
-								Some("Still in unfinished string")
-							);
-							return None;
-						}
-						}
-					}
-					Ok(c) => { token_str.push(c); }
-					Err(e) => {
-						print_error(pos,
-							Some(e.kind()),
-							Some("Still in unfinished string")
-						);
-						return None;
-					}
-					}
-				}
-				return Some((Token::String(token_str), pos));
-			}
 
-			_ => { return self.next(); }
+				| _ => {
+					return self.next();
+				}
 			}
 		}
 	}
@@ -530,17 +574,15 @@ use crate::traits::EOSDetector;
 impl EOSDetector for Lexer {
 	fn reached_eos(&mut self) -> bool {
 		match self.peek() {
-		Some(_) => { false }
-		None => {
-			let mut buf = [0 as u8; 1];
-		
-			match self.next_byte(&mut buf) {
-			Err(e) => {
-				e.kind() == ErrorKind::UnexpectedEof
+			| Some(_) => false,
+			| None => {
+				let mut buf = [0 as u8; 1];
+
+				match self.next_byte(&mut buf) {
+					| Err(e) => e.kind() == ErrorKind::UnexpectedEof,
+					| _ => false,
+				}
 			}
-			_ => { false }
-			}
-		}
 		}
 	}
 }
