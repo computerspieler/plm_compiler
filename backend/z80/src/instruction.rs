@@ -66,8 +66,11 @@ pub enum Condition {
 
 #[derive(Debug, Clone, InstructionLister)]
 pub enum Instruction {
+	#[help("Transfer data from op1 to op0")]
 	LD(Operand, Operand),
+	#[help("Push op0 onto the stack")]
 	PUSH(Operand),
+	#[help("Pop op0 from the stack")]
 	POP(Operand),
 	EX(Operand, Operand),
 	EXX,
@@ -95,11 +98,17 @@ pub enum Instruction {
 	DAA,
 	CPL,
 	NEG,
+	#[help("Clear the carry flag")]
 	CCF,
+	#[help("Set the carry flag")]
 	SCF,
+	#[help("Do nothing")]
 	NOP,
+	#[help("Halt the processor")]
 	HALT,
+	#[help("Disable interrupts")]
 	DI,
+	#[help("Enable interrupts")]
 	EI,
 
 	IM(u8),
@@ -120,6 +129,7 @@ pub enum Instruction {
 	RRD,
 
 	BIT(u8, Operand),
+	#[help("Set the bit c of op0")]
 	SET(u8, Operand),
 	RES(u8, Operand),
 
