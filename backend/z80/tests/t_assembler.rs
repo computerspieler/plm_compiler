@@ -53,16 +53,10 @@ use z80::instruction::UndocumentedRegister::*;
 use z80::instruction::WordRegister::*;
 use z80::instruction::*;
 
-test!(adc_a__hl__, [ADC(ByteRegister(A), AddressRegister(HL))], [
-	0x8E
-]);
-test!(adc_a__ix__, [ADC(ByteRegister(A), AddressRegister(IX))], [
-	0xDD, 0x8E, 0x00
-]);
+test!(adc_a__hl__, [ADC(ByteRegister(A), AddressRegister(HL))], [0x8E]);
+test!(adc_a__ix__, [ADC(ByteRegister(A), AddressRegister(IX))], [0xDD, 0x8E, 0x00]);
 test!(adc_a__ix_DIS__, [ADC(ByteRegister(A),AddressRegisterWithOffset(IX, DIS))], [0xDD, 0x8E, DIS], DIS: i8);
-test!(adc_a__iy__, [ADC(ByteRegister(A), AddressRegister(IY))], [
-	0xFD, 0x8E, 0x00
-]);
+test!(adc_a__iy__, [ADC(ByteRegister(A), AddressRegister(IY))], [0xFD, 0x8E, 0x00]);
 test!(adc_a__iy_DIS__, [ADC(ByteRegister(A),AddressRegisterWithOffset(IY, DIS))], [0xFD, 0x8E, DIS], DIS: i8);
 test!(adc_a_N_, [ADC(ByteRegister(A),Constant(n as i32))], [0xCE, n], n: u8);
 test!(adc_a_a_, [ADC(ByteRegister(A), ByteRegister(A))], [0x8F]);
@@ -92,28 +86,14 @@ test_ub!(
 	[0xFD, 0x8D]
 );
 test!(adc_a_l_, [ADC(ByteRegister(A), ByteRegister(L))], [0x8D]);
-test!(adc_hl_bc_, [ADC(WordRegister(HL), WordRegister(BC))], [
-	0xED, 0x4A
-]);
-test!(adc_hl_de_, [ADC(WordRegister(HL), WordRegister(DE))], [
-	0xED, 0x5A
-]);
-test!(adc_hl_hl_, [ADC(WordRegister(HL), WordRegister(HL))], [
-	0xED, 0x6A
-]);
-test!(adc_hl_sp_, [ADC(WordRegister(HL), WordRegister(SP))], [
-	0xED, 0x7A
-]);
-test!(add_a__hl__, [ADD(ByteRegister(A), AddressRegister(HL))], [
-	0x86
-]);
-test!(add_a__ix__, [ADD(ByteRegister(A), AddressRegister(IX))], [
-	0xDD, 0x86, 0x00
-]);
+test!(adc_hl_bc_, [ADC(WordRegister(HL), WordRegister(BC))], [0xED, 0x4A]);
+test!(adc_hl_de_, [ADC(WordRegister(HL), WordRegister(DE))], [0xED, 0x5A]);
+test!(adc_hl_hl_, [ADC(WordRegister(HL), WordRegister(HL))], [0xED, 0x6A]);
+test!(adc_hl_sp_, [ADC(WordRegister(HL), WordRegister(SP))], [0xED, 0x7A]);
+test!(add_a__hl__, [ADD(ByteRegister(A), AddressRegister(HL))], [0x86]);
+test!(add_a__ix__, [ADD(ByteRegister(A), AddressRegister(IX))], [0xDD, 0x86, 0x00]);
 test!(add_a__ix_DIS__, [ADD(ByteRegister(A),AddressRegisterWithOffset(IX, DIS))], [0xDD, 0x86, DIS], DIS: i8);
-test!(add_a__iy__, [ADD(ByteRegister(A), AddressRegister(IY))], [
-	0xFD, 0x86, 0x00
-]);
+test!(add_a__iy__, [ADD(ByteRegister(A), AddressRegister(IY))], [0xFD, 0x86, 0x00]);
 test!(add_a__iy_DIS__, [ADD(ByteRegister(A),AddressRegisterWithOffset(IY, DIS))], [0xFD, 0x86, DIS], DIS: i8);
 test!(add_a_N_, [ADD(ByteRegister(A),Constant(n as i32))], [0xC6, n], n: u8);
 test!(add_a_a_, [ADD(ByteRegister(A), ByteRegister(A))], [0x87]);
@@ -143,42 +123,18 @@ test_ub!(
 	[0xFD, 0x85]
 );
 test!(add_a_l_, [ADD(ByteRegister(A), ByteRegister(L))], [0x85]);
-test!(add_hl_bc_, [ADD(WordRegister(HL), WordRegister(BC))], [
-	0x09
-]);
-test!(add_hl_de_, [ADD(WordRegister(HL), WordRegister(DE))], [
-	0x19
-]);
-test!(add_hl_hl_, [ADD(WordRegister(HL), WordRegister(HL))], [
-	0x29
-]);
-test!(add_hl_sp_, [ADD(WordRegister(HL), WordRegister(SP))], [
-	0x39
-]);
-test!(add_ix_bc_, [ADD(WordRegister(IX), WordRegister(BC))], [
-	0xDD, 0x09
-]);
-test!(add_ix_de_, [ADD(WordRegister(IX), WordRegister(DE))], [
-	0xDD, 0x19
-]);
-test!(add_ix_ix_, [ADD(WordRegister(IX), WordRegister(IX))], [
-	0xDD, 0x29
-]);
-test!(add_ix_sp_, [ADD(WordRegister(IX), WordRegister(SP))], [
-	0xDD, 0x39
-]);
-test!(add_iy_bc_, [ADD(WordRegister(IY), WordRegister(BC))], [
-	0xFD, 0x09
-]);
-test!(add_iy_de_, [ADD(WordRegister(IY), WordRegister(DE))], [
-	0xFD, 0x19
-]);
-test!(add_iy_iy_, [ADD(WordRegister(IY), WordRegister(IY))], [
-	0xFD, 0x29
-]);
-test!(add_iy_sp_, [ADD(WordRegister(IY), WordRegister(SP))], [
-	0xFD, 0x39
-]);
+test!(add_hl_bc_, [ADD(WordRegister(HL), WordRegister(BC))], [0x09]);
+test!(add_hl_de_, [ADD(WordRegister(HL), WordRegister(DE))], [0x19]);
+test!(add_hl_hl_, [ADD(WordRegister(HL), WordRegister(HL))], [0x29]);
+test!(add_hl_sp_, [ADD(WordRegister(HL), WordRegister(SP))], [0x39]);
+test!(add_ix_bc_, [ADD(WordRegister(IX), WordRegister(BC))], [0xDD, 0x09]);
+test!(add_ix_de_, [ADD(WordRegister(IX), WordRegister(DE))], [0xDD, 0x19]);
+test!(add_ix_ix_, [ADD(WordRegister(IX), WordRegister(IX))], [0xDD, 0x29]);
+test!(add_ix_sp_, [ADD(WordRegister(IX), WordRegister(SP))], [0xDD, 0x39]);
+test!(add_iy_bc_, [ADD(WordRegister(IY), WordRegister(BC))], [0xFD, 0x09]);
+test!(add_iy_de_, [ADD(WordRegister(IY), WordRegister(DE))], [0xFD, 0x19]);
+test!(add_iy_iy_, [ADD(WordRegister(IY), WordRegister(IY))], [0xFD, 0x29]);
+test!(add_iy_sp_, [ADD(WordRegister(IY), WordRegister(SP))], [0xFD, 0x39]);
 test!(and__hl__, [AND(AddressRegister(HL))], [0xA6]);
 test!(and__ix__, [AND(AddressRegister(IX))], [0xDD, 0xA6, 0x00]);
 test!(and__ix_DIS__, [AND(AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xA6, DIS], DIS: i8);
@@ -197,13 +153,9 @@ test_ub!(and_iyh_, [AND(UndocumentedRegister(IYH))], [0xFD, 0xA4]);
 test_ub!(and_iyl_, [AND(UndocumentedRegister(IYL))], [0xFD, 0xA5]);
 test!(and_l_, [AND(ByteRegister(L))], [0xA5]);
 test!(bit_0__hl__, [BIT(0, AddressRegister(HL))], [0xCB, 0x46]);
-test!(bit_0__ix__, [BIT(0, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0x46
-]);
+test!(bit_0__ix__, [BIT(0, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0x46]);
 test!(bit_0__ix_DIS__, [BIT(0,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0x46], DIS: i8);
-test!(bit_0__iy__, [BIT(0, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0x46
-]);
+test!(bit_0__iy__, [BIT(0, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0x46]);
 test!(bit_0__iy_DIS__, [BIT(0,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0x46], DIS: i8);
 test!(bit_0_a_, [BIT(0, ByteRegister(A))], [0xCB, 0x47]);
 test!(bit_0_b_, [BIT(0, ByteRegister(B))], [0xCB, 0x40]);
@@ -213,13 +165,9 @@ test!(bit_0_e_, [BIT(0, ByteRegister(E))], [0xCB, 0x43]);
 test!(bit_0_h_, [BIT(0, ByteRegister(H))], [0xCB, 0x44]);
 test!(bit_0_l_, [BIT(0, ByteRegister(L))], [0xCB, 0x45]);
 test!(bit_1__hl__, [BIT(1, AddressRegister(HL))], [0xCB, 0x4E]);
-test!(bit_1__ix__, [BIT(1, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0x4E
-]);
+test!(bit_1__ix__, [BIT(1, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0x4E]);
 test!(bit_1__ix_DIS__, [BIT(1,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0x4E], DIS: i8);
-test!(bit_1__iy__, [BIT(1, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0x4E
-]);
+test!(bit_1__iy__, [BIT(1, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0x4E]);
 test!(bit_1__iy_DIS__, [BIT(1,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0x4E], DIS: i8);
 test!(bit_1_a_, [BIT(1, ByteRegister(A))], [0xCB, 0x4F]);
 test!(bit_1_b_, [BIT(1, ByteRegister(B))], [0xCB, 0x48]);
@@ -229,13 +177,9 @@ test!(bit_1_e_, [BIT(1, ByteRegister(E))], [0xCB, 0x4B]);
 test!(bit_1_h_, [BIT(1, ByteRegister(H))], [0xCB, 0x4C]);
 test!(bit_1_l_, [BIT(1, ByteRegister(L))], [0xCB, 0x4D]);
 test!(bit_2__hl__, [BIT(2, AddressRegister(HL))], [0xCB, 0x56]);
-test!(bit_2__ix__, [BIT(2, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0x56
-]);
+test!(bit_2__ix__, [BIT(2, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0x56]);
 test!(bit_2__ix_DIS__, [BIT(2,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0x56], DIS: i8);
-test!(bit_2__iy__, [BIT(2, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0x56
-]);
+test!(bit_2__iy__, [BIT(2, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0x56]);
 test!(bit_2__iy_DIS__, [BIT(2,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0x56], DIS: i8);
 test!(bit_2_a_, [BIT(2, ByteRegister(A))], [0xCB, 0x57]);
 test!(bit_2_b_, [BIT(2, ByteRegister(B))], [0xCB, 0x50]);
@@ -245,13 +189,9 @@ test!(bit_2_e_, [BIT(2, ByteRegister(E))], [0xCB, 0x53]);
 test!(bit_2_h_, [BIT(2, ByteRegister(H))], [0xCB, 0x54]);
 test!(bit_2_l_, [BIT(2, ByteRegister(L))], [0xCB, 0x55]);
 test!(bit_3__hl__, [BIT(3, AddressRegister(HL))], [0xCB, 0x5E]);
-test!(bit_3__ix__, [BIT(3, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0x5E
-]);
+test!(bit_3__ix__, [BIT(3, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0x5E]);
 test!(bit_3__ix_DIS__, [BIT(3,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0x5E], DIS: i8);
-test!(bit_3__iy__, [BIT(3, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0x5E
-]);
+test!(bit_3__iy__, [BIT(3, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0x5E]);
 test!(bit_3__iy_DIS__, [BIT(3,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0x5E], DIS: i8);
 test!(bit_3_a_, [BIT(3, ByteRegister(A))], [0xCB, 0x5F]);
 test!(bit_3_b_, [BIT(3, ByteRegister(B))], [0xCB, 0x58]);
@@ -261,13 +201,9 @@ test!(bit_3_e_, [BIT(3, ByteRegister(E))], [0xCB, 0x5B]);
 test!(bit_3_h_, [BIT(3, ByteRegister(H))], [0xCB, 0x5C]);
 test!(bit_3_l_, [BIT(3, ByteRegister(L))], [0xCB, 0x5D]);
 test!(bit_4__hl__, [BIT(4, AddressRegister(HL))], [0xCB, 0x66]);
-test!(bit_4__ix__, [BIT(4, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0x66
-]);
+test!(bit_4__ix__, [BIT(4, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0x66]);
 test!(bit_4__ix_DIS__, [BIT(4,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0x66], DIS: i8);
-test!(bit_4__iy__, [BIT(4, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0x66
-]);
+test!(bit_4__iy__, [BIT(4, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0x66]);
 test!(bit_4__iy_DIS__, [BIT(4,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0x66], DIS: i8);
 test!(bit_4_a_, [BIT(4, ByteRegister(A))], [0xCB, 0x67]);
 test!(bit_4_b_, [BIT(4, ByteRegister(B))], [0xCB, 0x60]);
@@ -277,13 +213,9 @@ test!(bit_4_e_, [BIT(4, ByteRegister(E))], [0xCB, 0x63]);
 test!(bit_4_h_, [BIT(4, ByteRegister(H))], [0xCB, 0x64]);
 test!(bit_4_l_, [BIT(4, ByteRegister(L))], [0xCB, 0x65]);
 test!(bit_5__hl__, [BIT(5, AddressRegister(HL))], [0xCB, 0x6E]);
-test!(bit_5__ix__, [BIT(5, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0x6E
-]);
+test!(bit_5__ix__, [BIT(5, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0x6E]);
 test!(bit_5__ix_DIS__, [BIT(5,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0x6E], DIS: i8);
-test!(bit_5__iy__, [BIT(5, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0x6E
-]);
+test!(bit_5__iy__, [BIT(5, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0x6E]);
 test!(bit_5__iy_DIS__, [BIT(5,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0x6E], DIS: i8);
 test!(bit_5_a_, [BIT(5, ByteRegister(A))], [0xCB, 0x6F]);
 test!(bit_5_b_, [BIT(5, ByteRegister(B))], [0xCB, 0x68]);
@@ -293,13 +225,9 @@ test!(bit_5_e_, [BIT(5, ByteRegister(E))], [0xCB, 0x6B]);
 test!(bit_5_h_, [BIT(5, ByteRegister(H))], [0xCB, 0x6C]);
 test!(bit_5_l_, [BIT(5, ByteRegister(L))], [0xCB, 0x6D]);
 test!(bit_6__hl__, [BIT(6, AddressRegister(HL))], [0xCB, 0x76]);
-test!(bit_6__ix__, [BIT(6, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0x76
-]);
+test!(bit_6__ix__, [BIT(6, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0x76]);
 test!(bit_6__ix_DIS__, [BIT(6,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0x76], DIS: i8);
-test!(bit_6__iy__, [BIT(6, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0x76
-]);
+test!(bit_6__iy__, [BIT(6, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0x76]);
 test!(bit_6__iy_DIS__, [BIT(6,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0x76], DIS: i8);
 test!(bit_6_a_, [BIT(6, ByteRegister(A))], [0xCB, 0x77]);
 test!(bit_6_b_, [BIT(6, ByteRegister(B))], [0xCB, 0x70]);
@@ -309,13 +237,9 @@ test!(bit_6_e_, [BIT(6, ByteRegister(E))], [0xCB, 0x73]);
 test!(bit_6_h_, [BIT(6, ByteRegister(H))], [0xCB, 0x74]);
 test!(bit_6_l_, [BIT(6, ByteRegister(L))], [0xCB, 0x75]);
 test!(bit_7__hl__, [BIT(7, AddressRegister(HL))], [0xCB, 0x7E]);
-test!(bit_7__ix__, [BIT(7, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0x7E
-]);
+test!(bit_7__ix__, [BIT(7, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0x7E]);
 test!(bit_7__ix_DIS__, [BIT(7,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0x7E], DIS: i8);
-test!(bit_7__iy__, [BIT(7, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0x7E
-]);
+test!(bit_7__iy__, [BIT(7, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0x7E]);
 test!(bit_7__iy_DIS__, [BIT(7,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0x7E], DIS: i8);
 test!(bit_7_a_, [BIT(7, ByteRegister(A))], [0xCB, 0x7F]);
 test!(bit_7_b_, [BIT(7, ByteRegister(B))], [0xCB, 0x78]);
@@ -381,45 +305,23 @@ test!(dec_l_, [DEC(ByteRegister(L))], [0x2D]);
 test!(dec_sp_, [DEC(WordRegister(SP))], [0x3B]);
 test!(di, [DI], [0xF3]);
 test!(ei, [EI], [0xFB]);
-test!(ex__sp__hl_, [EX(AddressRegister(SP), WordRegister(HL))], [
-	0xE3
-]);
-test!(ex__sp__ix_, [EX(AddressRegister(SP), WordRegister(IX))], [
-	0xDD, 0xE3
-]);
-test!(ex__sp__iy_, [EX(AddressRegister(SP), WordRegister(IY))], [
-	0xFD, 0xE3
-]);
-test!(ex_af_af__, [EX(WordRegister(AF), WordRegister(AF_))], [
-	0x08
-]);
+test!(ex__sp__hl_, [EX(AddressRegister(SP), WordRegister(HL))], [0xE3]);
+test!(ex__sp__ix_, [EX(AddressRegister(SP), WordRegister(IX))], [0xDD, 0xE3]);
+test!(ex__sp__iy_, [EX(AddressRegister(SP), WordRegister(IY))], [0xFD, 0xE3]);
+test!(ex_af_af__, [EX(WordRegister(AF), WordRegister(AF_))], [0x08]);
 test!(ex_de_hl_, [EX(WordRegister(DE), WordRegister(HL))], [0xEB]);
 test!(exx, [EXX], [0xD9]);
 test!(halt, [HALT], [0x76]);
 test!(im_0_, [IM(0)], [0xED, 0x46]);
 test!(im_1_, [IM(1)], [0xED, 0x56]);
 test!(im_2_, [IM(2)], [0xED, 0x5E]);
-test!(in_a__c__, [IN(ByteRegister(A), PortRegister(C))], [
-	0xED, 0x78
-]);
-test!(in_b__c__, [IN(ByteRegister(B), PortRegister(C))], [
-	0xED, 0x40
-]);
-test!(in_c__c__, [IN(ByteRegister(C), PortRegister(C))], [
-	0xED, 0x48
-]);
-test!(in_d__c__, [IN(ByteRegister(D), PortRegister(C))], [
-	0xED, 0x50
-]);
-test!(in_e__c__, [IN(ByteRegister(E), PortRegister(C))], [
-	0xED, 0x58
-]);
-test!(in_h__c__, [IN(ByteRegister(H), PortRegister(C))], [
-	0xED, 0x60
-]);
-test!(in_l__c__, [IN(ByteRegister(L), PortRegister(C))], [
-	0xED, 0x68
-]);
+test!(in_a__c__, [IN(ByteRegister(A), PortRegister(C))], [0xED, 0x78]);
+test!(in_b__c__, [IN(ByteRegister(B), PortRegister(C))], [0xED, 0x40]);
+test!(in_c__c__, [IN(ByteRegister(C), PortRegister(C))], [0xED, 0x48]);
+test!(in_d__c__, [IN(ByteRegister(D), PortRegister(C))], [0xED, 0x50]);
+test!(in_e__c__, [IN(ByteRegister(E), PortRegister(C))], [0xED, 0x58]);
+test!(in_h__c__, [IN(ByteRegister(H), PortRegister(C))], [0xED, 0x60]);
+test!(in_l__c__, [IN(ByteRegister(L), PortRegister(C))], [0xED, 0x68]);
 test!(inc__hl__, [INC(AddressRegister(HL))], [0x34]);
 test!(inc__ix__, [INC(AddressRegister(IX))], [0xDD, 0x34, 0x00]);
 test!(inc__iy__, [INC(AddressRegister(IY))], [0xFD, 0x34, 0x00]);
@@ -443,111 +345,41 @@ test!(inir, [INIR], [0xED, 0xB2]);
 test!(jp__hl__, [JP(None, WordRegister(HL))], [0xE9]);
 test!(jp__ix__, [JP(None, WordRegister(IX))], [0xDD, 0xE9]);
 test!(jp__iy__, [JP(None, WordRegister(IY))], [0xFD, 0xE9]);
-test!(ld__bc__a_, [LD(AddressRegister(BC), ByteRegister(A))], [
-	0x02
-]);
-test!(ld__de__a_, [LD(AddressRegister(DE), ByteRegister(A))], [
-	0x12
-]);
-test!(ld__hl__a_, [LD(AddressRegister(HL), ByteRegister(A))], [
-	0x77
-]);
-test!(ld__hl__b_, [LD(AddressRegister(HL), ByteRegister(B))], [
-	0x70
-]);
-test!(ld__hl__bc_, [LD(AddressRegister(HL), WordRegister(BC))], [
-	0x71, 0x23, 0x70, 0x2B
-]);
-test!(ld__hl__c_, [LD(AddressRegister(HL), ByteRegister(C))], [
-	0x71
-]);
-test!(ld__hl__d_, [LD(AddressRegister(HL), ByteRegister(D))], [
-	0x72
-]);
-test!(ld__hl__de_, [LD(AddressRegister(HL), WordRegister(DE))], [
-	0x73, 0x23, 0x72, 0x2B
-]);
-test!(ld__hl__e_, [LD(AddressRegister(HL), ByteRegister(E))], [
-	0x73
-]);
-test!(ld__hl__h_, [LD(AddressRegister(HL), ByteRegister(H))], [
-	0x74
-]);
-test!(ld__hl__l_, [LD(AddressRegister(HL), ByteRegister(L))], [
-	0x75
-]);
-test!(ld__ix__a_, [LD(AddressRegister(IX), ByteRegister(A))], [
-	0xDD, 0x77, 0x00
-]);
-test!(ld__ix__b_, [LD(AddressRegister(IX), ByteRegister(B))], [
-	0xDD, 0x70, 0x00
-]);
-test!(ld__ix__bc_, [LD(AddressRegister(IX), WordRegister(BC))], [
-	0xDD, 0x71, 0x00, 0xDD, 0x70, 0x01
-]);
-test!(ld__ix__c_, [LD(AddressRegister(IX), ByteRegister(C))], [
-	0xDD, 0x71, 0x00
-]);
-test!(ld__ix__d_, [LD(AddressRegister(IX), ByteRegister(D))], [
-	0xDD, 0x72, 0x00
-]);
-test!(ld__ix__de_, [LD(AddressRegister(IX), WordRegister(DE))], [
-	0xDD, 0x73, 0x00, 0xDD, 0x72, 0x01
-]);
-test!(ld__ix__e_, [LD(AddressRegister(IX), ByteRegister(E))], [
-	0xDD, 0x73, 0x00
-]);
-test!(ld__ix__h_, [LD(AddressRegister(IX), ByteRegister(H))], [
-	0xDD, 0x74, 0x00
-]);
-test!(ld__ix__hl_, [LD(AddressRegister(IX), WordRegister(HL))], [
-	0xDD, 0x75, 0x00, 0xDD, 0x74, 0x01
-]);
-test!(ld__ix__l_, [LD(AddressRegister(IX), ByteRegister(L))], [
-	0xDD, 0x75, 0x00
-]);
-test!(ld__iy__a_, [LD(AddressRegister(IY), ByteRegister(A))], [
-	0xFD, 0x77, 0x00
-]);
-test!(ld__iy__b_, [LD(AddressRegister(IY), ByteRegister(B))], [
-	0xFD, 0x70, 0x00
-]);
-test!(ld__iy__bc_, [LD(AddressRegister(IY), WordRegister(BC))], [
-	0xFD, 0x71, 0x00, 0xFD, 0x70, 0x01
-]);
-test!(ld__iy__c_, [LD(AddressRegister(IY), ByteRegister(C))], [
-	0xFD, 0x71, 0x00
-]);
-test!(ld__iy__d_, [LD(AddressRegister(IY), ByteRegister(D))], [
-	0xFD, 0x72, 0x00
-]);
-test!(ld__iy__de_, [LD(AddressRegister(IY), WordRegister(DE))], [
-	0xFD, 0x73, 0x00, 0xFD, 0x72, 0x01
-]);
-test!(ld__iy__e_, [LD(AddressRegister(IY), ByteRegister(E))], [
-	0xFD, 0x73, 0x00
-]);
-test!(ld__iy__h_, [LD(AddressRegister(IY), ByteRegister(H))], [
-	0xFD, 0x74, 0x00
-]);
-test!(ld__iy__hl_, [LD(AddressRegister(IY), WordRegister(HL))], [
-	0xFD, 0x75, 0x00, 0xFD, 0x74, 0x01
-]);
-test!(ld__iy__l_, [LD(AddressRegister(IY), ByteRegister(L))], [
-	0xFD, 0x75, 0x00
-]);
-test!(ld_a__de__, [LD(ByteRegister(A), AddressRegister(DE))], [
-	0x1A
-]);
-test!(ld_a__hl__, [LD(ByteRegister(A), AddressRegister(HL))], [
-	0x7E
-]);
-test!(ld_a__ix__, [LD(ByteRegister(A), AddressRegister(IX))], [
-	0xDD, 0x7E, 0x00
-]);
-test!(ld_a__iy__, [LD(ByteRegister(A), AddressRegister(IY))], [
-	0xFD, 0x7E, 0x00
-]);
+test!(ld__bc__a_, [LD(AddressRegister(BC), ByteRegister(A))], [0x02]);
+test!(ld__de__a_, [LD(AddressRegister(DE), ByteRegister(A))], [0x12]);
+test!(ld__hl__a_, [LD(AddressRegister(HL), ByteRegister(A))], [0x77]);
+test!(ld__hl__b_, [LD(AddressRegister(HL), ByteRegister(B))], [0x70]);
+test!(ld__hl__bc_, [LD(AddressRegister(HL), WordRegister(BC))], [0x71, 0x23, 0x70, 0x2B]);
+test!(ld__hl__c_, [LD(AddressRegister(HL), ByteRegister(C))], [0x71]);
+test!(ld__hl__d_, [LD(AddressRegister(HL), ByteRegister(D))], [0x72]);
+test!(ld__hl__de_, [LD(AddressRegister(HL), WordRegister(DE))], [0x73, 0x23, 0x72, 0x2B]);
+test!(ld__hl__e_, [LD(AddressRegister(HL), ByteRegister(E))], [0x73]);
+test!(ld__hl__h_, [LD(AddressRegister(HL), ByteRegister(H))], [0x74]);
+test!(ld__hl__l_, [LD(AddressRegister(HL), ByteRegister(L))], [0x75]);
+test!(ld__ix__a_, [LD(AddressRegister(IX), ByteRegister(A))], [0xDD, 0x77, 0x00]);
+test!(ld__ix__b_, [LD(AddressRegister(IX), ByteRegister(B))], [0xDD, 0x70, 0x00]);
+test!(ld__ix__bc_, [LD(AddressRegister(IX), WordRegister(BC))], [0xDD, 0x71, 0x00, 0xDD, 0x70, 0x01]);
+test!(ld__ix__c_, [LD(AddressRegister(IX), ByteRegister(C))], [0xDD, 0x71, 0x00]);
+test!(ld__ix__d_, [LD(AddressRegister(IX), ByteRegister(D))], [0xDD, 0x72, 0x00]);
+test!(ld__ix__de_, [LD(AddressRegister(IX), WordRegister(DE))], [0xDD, 0x73, 0x00, 0xDD, 0x72, 0x01]);
+test!(ld__ix__e_, [LD(AddressRegister(IX), ByteRegister(E))], [0xDD, 0x73, 0x00]);
+test!(ld__ix__h_, [LD(AddressRegister(IX), ByteRegister(H))], [0xDD, 0x74, 0x00]);
+test!(ld__ix__hl_, [LD(AddressRegister(IX), WordRegister(HL))], [0xDD, 0x75, 0x00, 0xDD, 0x74, 0x01]);
+test!(ld__ix__l_, [LD(AddressRegister(IX), ByteRegister(L))], [0xDD, 0x75, 0x00]);
+test!(ld__iy__a_, [LD(AddressRegister(IY), ByteRegister(A))], [0xFD, 0x77, 0x00]);
+test!(ld__iy__b_, [LD(AddressRegister(IY), ByteRegister(B))], [0xFD, 0x70, 0x00]);
+test!(ld__iy__bc_, [LD(AddressRegister(IY), WordRegister(BC))], [0xFD, 0x71, 0x00, 0xFD, 0x70, 0x01]);
+test!(ld__iy__c_, [LD(AddressRegister(IY), ByteRegister(C))], [0xFD, 0x71, 0x00]);
+test!(ld__iy__d_, [LD(AddressRegister(IY), ByteRegister(D))], [0xFD, 0x72, 0x00]);
+test!(ld__iy__de_, [LD(AddressRegister(IY), WordRegister(DE))], [0xFD, 0x73, 0x00, 0xFD, 0x72, 0x01]);
+test!(ld__iy__e_, [LD(AddressRegister(IY), ByteRegister(E))], [0xFD, 0x73, 0x00]);
+test!(ld__iy__h_, [LD(AddressRegister(IY), ByteRegister(H))], [0xFD, 0x74, 0x00]);
+test!(ld__iy__hl_, [LD(AddressRegister(IY), WordRegister(HL))], [0xFD, 0x75, 0x00, 0xFD, 0x74, 0x01]);
+test!(ld__iy__l_, [LD(AddressRegister(IY), ByteRegister(L))], [0xFD, 0x75, 0x00]);
+test!(ld_a__de__, [LD(ByteRegister(A), AddressRegister(DE))], [0x1A]);
+test!(ld_a__hl__, [LD(ByteRegister(A), AddressRegister(HL))], [0x7E]);
+test!(ld_a__ix__, [LD(ByteRegister(A), AddressRegister(IX))], [0xDD, 0x7E, 0x00]);
+test!(ld_a__iy__, [LD(ByteRegister(A), AddressRegister(IY))], [0xFD, 0x7E, 0x00]);
 test!(ld_a_a_, [LD(ByteRegister(A), ByteRegister(A))], [0x7F]);
 test!(ld_a_b_, [LD(ByteRegister(A), ByteRegister(B))], [0x78]);
 test!(ld_a_c_, [LD(ByteRegister(A), ByteRegister(C))], [0x79]);
@@ -557,15 +389,9 @@ test!(ld_a_h_, [LD(ByteRegister(A), ByteRegister(H))], [0x7C]);
 test!(ld_a_i_, [LD(ByteRegister(A), I)], [0xED, 0x57]);
 test!(ld_a_l_, [LD(ByteRegister(A), ByteRegister(L))], [0x7D]);
 test!(ld_a_r_, [LD(ByteRegister(A), R)], [0xED, 0x5F]);
-test!(ld_b__hl__, [LD(ByteRegister(B), AddressRegister(HL))], [
-	0x46
-]);
-test!(ld_b__ix__, [LD(ByteRegister(B), AddressRegister(IX))], [
-	0xDD, 0x46, 0x00
-]);
-test!(ld_b__iy__, [LD(ByteRegister(B), AddressRegister(IY))], [
-	0xFD, 0x46, 0x00
-]);
+test!(ld_b__hl__, [LD(ByteRegister(B), AddressRegister(HL))], [0x46]);
+test!(ld_b__ix__, [LD(ByteRegister(B), AddressRegister(IX))], [0xDD, 0x46, 0x00]);
+test!(ld_b__iy__, [LD(ByteRegister(B), AddressRegister(IY))], [0xFD, 0x46, 0x00]);
 test!(ld_b_a_, [LD(ByteRegister(B), ByteRegister(A))], [0x47]);
 test!(ld_b_b_, [LD(ByteRegister(B), ByteRegister(B))], [0x40]);
 test!(ld_b_c_, [LD(ByteRegister(B), ByteRegister(C))], [0x41]);
@@ -573,39 +399,17 @@ test!(ld_b_d_, [LD(ByteRegister(B), ByteRegister(D))], [0x42]);
 test!(ld_b_e_, [LD(ByteRegister(B), ByteRegister(E))], [0x43]);
 test!(ld_b_h_, [LD(ByteRegister(B), ByteRegister(H))], [0x44]);
 test!(ld_b_l_, [LD(ByteRegister(B), ByteRegister(L))], [0x45]);
-test!(ld_bc__hl__, [LD(WordRegister(BC), AddressRegister(HL))], [
-	0x4E, 0x23, 0x46, 0x2B
-]);
-test!(ld_bc__ix__, [LD(WordRegister(BC), AddressRegister(IX))], [
-	0xDD, 0x4E, 0x00, 0xDD, 0x46, 0x01
-]);
-test!(ld_bc__iy__, [LD(WordRegister(BC), AddressRegister(IY))], [
-	0xFD, 0x4E, 0x00, 0xFD, 0x46, 0x01
-]);
-test!(ld_bc_bc_, [LD(WordRegister(BC), WordRegister(BC))], [
-	0x40, 0x49
-]);
-test!(ld_bc_de_, [LD(WordRegister(BC), WordRegister(DE))], [
-	0x42, 0x4B
-]);
-test!(ld_bc_hl_, [LD(WordRegister(BC), WordRegister(HL))], [
-	0x44, 0x4D
-]);
-test!(ld_bc_ix_, [LD(WordRegister(BC), WordRegister(IX))], [
-	0xDD, 0x44, 0xDD, 0x4D
-]);
-test!(ld_bc_iy_, [LD(WordRegister(BC), WordRegister(IY))], [
-	0xFD, 0x44, 0xFD, 0x4D
-]);
-test!(ld_c__hl__, [LD(ByteRegister(C), AddressRegister(HL))], [
-	0x4E
-]);
-test!(ld_c__ix__, [LD(ByteRegister(C), AddressRegister(IX))], [
-	0xDD, 0x4E, 0x00
-]);
-test!(ld_c__iy__, [LD(ByteRegister(C), AddressRegister(IY))], [
-	0xFD, 0x4E, 0x00
-]);
+test!(ld_bc__hl__, [LD(WordRegister(BC), AddressRegister(HL))], [0x4E, 0x23, 0x46, 0x2B]);
+test!(ld_bc__ix__, [LD(WordRegister(BC), AddressRegister(IX))], [0xDD, 0x4E, 0x00, 0xDD, 0x46, 0x01]);
+test!(ld_bc__iy__, [LD(WordRegister(BC), AddressRegister(IY))], [0xFD, 0x4E, 0x00, 0xFD, 0x46, 0x01]);
+test!(ld_bc_bc_, [LD(WordRegister(BC), WordRegister(BC))], [0x40, 0x49]);
+test!(ld_bc_de_, [LD(WordRegister(BC), WordRegister(DE))], [0x42, 0x4B]);
+test!(ld_bc_hl_, [LD(WordRegister(BC), WordRegister(HL))], [0x44, 0x4D]);
+test!(ld_bc_ix_, [LD(WordRegister(BC), WordRegister(IX))], [0xDD, 0x44, 0xDD, 0x4D]);
+test!(ld_bc_iy_, [LD(WordRegister(BC), WordRegister(IY))], [0xFD, 0x44, 0xFD, 0x4D]);
+test!(ld_c__hl__, [LD(ByteRegister(C), AddressRegister(HL))], [0x4E]);
+test!(ld_c__ix__, [LD(ByteRegister(C), AddressRegister(IX))], [0xDD, 0x4E, 0x00]);
+test!(ld_c__iy__, [LD(ByteRegister(C), AddressRegister(IY))], [0xFD, 0x4E, 0x00]);
 test!(ld_c_a_, [LD(ByteRegister(C), ByteRegister(A))], [0x4F]);
 test!(ld_c_b_, [LD(ByteRegister(C), ByteRegister(B))], [0x48]);
 test!(ld_c_c_, [LD(ByteRegister(C), ByteRegister(C))], [0x49]);
@@ -613,15 +417,9 @@ test!(ld_c_d_, [LD(ByteRegister(C), ByteRegister(D))], [0x4A]);
 test!(ld_c_e_, [LD(ByteRegister(C), ByteRegister(E))], [0x4B]);
 test!(ld_c_h_, [LD(ByteRegister(C), ByteRegister(H))], [0x4C]);
 test!(ld_c_l_, [LD(ByteRegister(C), ByteRegister(L))], [0x4D]);
-test!(ld_d__hl__, [LD(ByteRegister(D), AddressRegister(HL))], [
-	0x56
-]);
-test!(ld_d__ix__, [LD(ByteRegister(D), AddressRegister(IX))], [
-	0xDD, 0x56, 0x00
-]);
-test!(ld_d__iy__, [LD(ByteRegister(D), AddressRegister(IY))], [
-	0xFD, 0x56, 0x00
-]);
+test!(ld_d__hl__, [LD(ByteRegister(D), AddressRegister(HL))], [0x56]);
+test!(ld_d__ix__, [LD(ByteRegister(D), AddressRegister(IX))], [0xDD, 0x56, 0x00]);
+test!(ld_d__iy__, [LD(ByteRegister(D), AddressRegister(IY))], [0xFD, 0x56, 0x00]);
 test!(ld_h_a_, [LD(ByteRegister(H), ByteRegister(A))], [0x67]);
 test!(ld_h_b_, [LD(ByteRegister(H), ByteRegister(B))], [0x60]);
 test!(ld_h_c_, [LD(ByteRegister(H), ByteRegister(C))], [0x61]);
@@ -629,61 +427,25 @@ test!(ld_h_d_, [LD(ByteRegister(H), ByteRegister(D))], [0x62]);
 test!(ld_h_e_, [LD(ByteRegister(H), ByteRegister(E))], [0x63]);
 test!(ld_h_h_, [LD(ByteRegister(H), ByteRegister(H))], [0x64]);
 test!(ld_h_l_, [LD(ByteRegister(H), ByteRegister(L))], [0x65]);
-test!(ld_hl_bc_, [LD(WordRegister(HL), WordRegister(BC))], [
-	0x60, 0x69
-]);
-test!(ld_hl_de_, [LD(WordRegister(HL), WordRegister(DE))], [
-	0x62, 0x6B
-]);
-test!(ld_hl_hl_, [LD(WordRegister(HL), WordRegister(HL))], [
-	0x64, 0x6D
-]);
-test!(ld_hl_ix_, [LD(WordRegister(HL), WordRegister(IX))], [
-	0xDD, 0xE5, 0xE1
-]);
-test!(ld_hl_iy_, [LD(WordRegister(HL), WordRegister(IY))], [
-	0xFD, 0xE5, 0xE1
-]);
+test!(ld_hl_bc_, [LD(WordRegister(HL), WordRegister(BC))], [0x60, 0x69]);
+test!(ld_hl_de_, [LD(WordRegister(HL), WordRegister(DE))], [0x62, 0x6B]);
+test!(ld_hl_hl_, [LD(WordRegister(HL), WordRegister(HL))], [0x64, 0x6D]);
+test!(ld_hl_ix_, [LD(WordRegister(HL), WordRegister(IX))], [0xDD, 0xE5, 0xE1]);
+test!(ld_hl_iy_, [LD(WordRegister(HL), WordRegister(IY))], [0xFD, 0xE5, 0xE1]);
 test!(ld_i_a_, [LD(I, ByteRegister(A))], [0xED, 0x47]);
-test!(ld_ix_bc_, [LD(WordRegister(IX), WordRegister(BC))], [
-	0xDD, 0x69, 0xDD, 0x60
-]);
-test!(ld_ix_de_, [LD(WordRegister(IX), WordRegister(DE))], [
-	0xDD, 0x6B, 0xDD, 0x62
-]);
-test!(ld_ix_hl_, [LD(WordRegister(IX), WordRegister(HL))], [
-	0xE5, 0xDD, 0xE1
-]);
-test!(ld_ix_ix_, [LD(WordRegister(IX), WordRegister(IX))], [
-	0xDD, 0x6D, 0xDD, 0x64
-]);
-test!(ld_ix_iy_, [LD(WordRegister(IX), WordRegister(IY))], [
-	0xFD, 0xE5, 0xDD, 0xE1
-]);
-test!(ld_iy_bc_, [LD(WordRegister(IY), WordRegister(BC))], [
-	0xFD, 0x69, 0xFD, 0x60
-]);
-test!(ld_iy_de_, [LD(WordRegister(IY), WordRegister(DE))], [
-	0xFD, 0x6B, 0xFD, 0x62
-]);
-test!(ld_iy_hl_, [LD(WordRegister(IY), WordRegister(HL))], [
-	0xE5, 0xFD, 0xE1
-]);
-test!(ld_iy_ix_, [LD(WordRegister(IY), WordRegister(IX))], [
-	0xDD, 0xE5, 0xFD, 0xE1
-]);
-test!(ld_iy_iy_, [LD(WordRegister(IY), WordRegister(IY))], [
-	0xFD, 0x6D, 0xFD, 0x64
-]);
-test!(ld_l__hl__, [LD(ByteRegister(L), AddressRegister(HL))], [
-	0x6E
-]);
-test!(ld_l__ix__, [LD(ByteRegister(L), AddressRegister(IX))], [
-	0xDD, 0x6E, 0x00
-]);
-test!(ld_l__iy__, [LD(ByteRegister(L), AddressRegister(IY))], [
-	0xFD, 0x6E, 0x00
-]);
+test!(ld_ix_bc_, [LD(WordRegister(IX), WordRegister(BC))], [0xDD, 0x69, 0xDD, 0x60]);
+test!(ld_ix_de_, [LD(WordRegister(IX), WordRegister(DE))], [0xDD, 0x6B, 0xDD, 0x62]);
+test!(ld_ix_hl_, [LD(WordRegister(IX), WordRegister(HL))], [0xE5, 0xDD, 0xE1]);
+test!(ld_ix_ix_, [LD(WordRegister(IX), WordRegister(IX))], [0xDD, 0x6D, 0xDD, 0x64]);
+test!(ld_ix_iy_, [LD(WordRegister(IX), WordRegister(IY))], [0xFD, 0xE5, 0xDD, 0xE1]);
+test!(ld_iy_bc_, [LD(WordRegister(IY), WordRegister(BC))], [0xFD, 0x69, 0xFD, 0x60]);
+test!(ld_iy_de_, [LD(WordRegister(IY), WordRegister(DE))], [0xFD, 0x6B, 0xFD, 0x62]);
+test!(ld_iy_hl_, [LD(WordRegister(IY), WordRegister(HL))], [0xE5, 0xFD, 0xE1]);
+test!(ld_iy_ix_, [LD(WordRegister(IY), WordRegister(IX))], [0xDD, 0xE5, 0xFD, 0xE1]);
+test!(ld_iy_iy_, [LD(WordRegister(IY), WordRegister(IY))], [0xFD, 0x6D, 0xFD, 0x64]);
+test!(ld_l__hl__, [LD(ByteRegister(L), AddressRegister(HL))], [0x6E]);
+test!(ld_l__ix__, [LD(ByteRegister(L), AddressRegister(IX))], [0xDD, 0x6E, 0x00]);
+test!(ld_l__iy__, [LD(ByteRegister(L), AddressRegister(IY))], [0xFD, 0x6E, 0x00]);
 test!(ld_l_a_, [LD(ByteRegister(L), ByteRegister(A))], [0x6F]);
 test!(ld_l_b_, [LD(ByteRegister(L), ByteRegister(B))], [0x68]);
 test!(ld_l_c_, [LD(ByteRegister(L), ByteRegister(C))], [0x69]);
@@ -693,12 +455,8 @@ test!(ld_l_h_, [LD(ByteRegister(L), ByteRegister(H))], [0x6C]);
 test!(ld_l_l_, [LD(ByteRegister(L), ByteRegister(L))], [0x6D]);
 test!(ld_r_a_, [LD(R, ByteRegister(A))], [0xED, 0x4F]);
 test!(ld_sp_hl_, [LD(WordRegister(SP), WordRegister(HL))], [0xF9]);
-test!(ld_sp_ix_, [LD(WordRegister(SP), WordRegister(IX))], [
-	0xDD, 0xF9
-]);
-test!(ld_sp_iy_, [LD(WordRegister(SP), WordRegister(IY))], [
-	0xFD, 0xF9
-]);
+test!(ld_sp_ix_, [LD(WordRegister(SP), WordRegister(IX))], [0xDD, 0xF9]);
+test!(ld_sp_iy_, [LD(WordRegister(SP), WordRegister(IY))], [0xFD, 0xF9]);
 test!(ldd, [LDD], [0xED, 0xA8]);
 
 test_ub!(inc_ixh_, [INC(UndocumentedRegister(IXH))], [0xDD, 0x24]);
@@ -792,12 +550,8 @@ test_ub!(
 	[0xFD, 0x55]
 );
 test!(ld_d_l_, [LD(ByteRegister(D), ByteRegister(L))], [0x55]);
-test!(ld_e__hl__, [LD(ByteRegister(E), AddressRegister(HL))], [
-	0x5E
-]);
-test!(ld_e__ix__, [LD(ByteRegister(E), AddressRegister(IX))], [
-	0xDD, 0x5E, 0x00
-]);
+test!(ld_e__hl__, [LD(ByteRegister(E), AddressRegister(HL))], [0x5E]);
+test!(ld_e__ix__, [LD(ByteRegister(E), AddressRegister(IX))], [0xDD, 0x5E, 0x00]);
 test!(ld_e_a_, [LD(ByteRegister(E), ByteRegister(A))], [0x5F]);
 test!(ld_e_b_, [LD(ByteRegister(E), ByteRegister(B))], [0x58]);
 test!(ld_e_c_, [LD(ByteRegister(E), ByteRegister(C))], [0x59]);
@@ -825,21 +579,11 @@ test_ub!(
 	[0xFD, 0x5D]
 );
 test!(ld_e_l_, [LD(ByteRegister(E), ByteRegister(L))], [0x5D]);
-test!(ld_h__hl__, [LD(ByteRegister(H), AddressRegister(HL))], [
-	0x66
-]);
-test!(ld_h__ix__, [LD(ByteRegister(H), AddressRegister(IX))], [
-	0xDD, 0x66, 0x00
-]);
-test!(ld_h__iy__, [LD(ByteRegister(H), AddressRegister(IY))], [
-	0xFD, 0x66, 0x00
-]);
-test!(ld_hl__ix__, [LD(WordRegister(HL), AddressRegister(IX))], [
-	0xDD, 0x6E, 0x00, 0xDD, 0x66, 0x01
-]);
-test!(ld_hl__iy__, [LD(WordRegister(HL), AddressRegister(IY))], [
-	0xFD, 0x6E, 0x00, 0xFD, 0x66, 0x01
-]);
+test!(ld_h__hl__, [LD(ByteRegister(H), AddressRegister(HL))], [0x66]);
+test!(ld_h__ix__, [LD(ByteRegister(H), AddressRegister(IX))], [0xDD, 0x66, 0x00]);
+test!(ld_h__iy__, [LD(ByteRegister(H), AddressRegister(IY))], [0xFD, 0x66, 0x00]);
+test!(ld_hl__ix__, [LD(WordRegister(HL), AddressRegister(IX))], [0xDD, 0x6E, 0x00, 0xDD, 0x66, 0x01]);
+test!(ld_hl__iy__, [LD(WordRegister(HL), AddressRegister(IY))], [0xFD, 0x6E, 0x00, 0xFD, 0x66, 0x01]);
 test_ub!(
 	ld_ixh_a_,
 	[LD(UndocumentedRegister(IXH), ByteRegister(A))],
@@ -1001,30 +745,14 @@ test_ub!(or_iyl_, [OR(UndocumentedRegister(IYL))], [0xFD, 0xB5]);
 test!(or_l_, [OR(ByteRegister(L))], [0xB5]);
 test!(otdr, [OTDR], [0xED, 0xBB]);
 test!(otir, [OTIR], [0xED, 0xB3]);
-test_ub!(out__c__0_, [OUT(PortRegister(C), Constant(0))], [
-	0xED, 0x71
-]);
-test!(out__c__a_, [OUT(PortRegister(C), ByteRegister(A))], [
-	0xED, 0x79
-]);
-test!(out__c__b_, [OUT(PortRegister(C), ByteRegister(B))], [
-	0xED, 0x41
-]);
-test!(out__c__c_, [OUT(PortRegister(C), ByteRegister(C))], [
-	0xED, 0x49
-]);
-test!(out__c__d_, [OUT(PortRegister(C), ByteRegister(D))], [
-	0xED, 0x51
-]);
-test!(out__c__e_, [OUT(PortRegister(C), ByteRegister(E))], [
-	0xED, 0x59
-]);
-test!(out__c__h_, [OUT(PortRegister(C), ByteRegister(H))], [
-	0xED, 0x61
-]);
-test!(out__c__l_, [OUT(PortRegister(C), ByteRegister(L))], [
-	0xED, 0x69
-]);
+test_ub!(out__c__0_, [OUT(PortRegister(C), Constant(0))], [0xED, 0x71]);
+test!(out__c__a_, [OUT(PortRegister(C), ByteRegister(A))], [0xED, 0x79]);
+test!(out__c__b_, [OUT(PortRegister(C), ByteRegister(B))], [0xED, 0x41]);
+test!(out__c__c_, [OUT(PortRegister(C), ByteRegister(C))], [0xED, 0x49]);
+test!(out__c__d_, [OUT(PortRegister(C), ByteRegister(D))], [0xED, 0x51]);
+test!(out__c__e_, [OUT(PortRegister(C), ByteRegister(E))], [0xED, 0x59]);
+test!(out__c__h_, [OUT(PortRegister(C), ByteRegister(H))], [0xED, 0x61]);
+test!(out__c__l_, [OUT(PortRegister(C), ByteRegister(L))], [0xED, 0x69]);
 test!(outd, [OUTD], [0xED, 0xAB]);
 test!(outi, [OUTI], [0xED, 0xA3]);
 test!(pop_af_, [POP(WordRegister(AF))], [0xF1]);
@@ -1040,9 +768,7 @@ test!(push_hl_, [PUSH(WordRegister(HL))], [0xE5]);
 test!(push_ix_, [PUSH(WordRegister(IX))], [0xDD, 0xE5]);
 test!(push_iy_, [PUSH(WordRegister(IY))], [0xFD, 0xE5]);
 test!(res_0__hl__, [RES(0, AddressRegister(HL))], [0xCB, 0x86]);
-test!(res_0__ix__, [RES(0, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0x86
-]);
+test!(res_0__ix__, [RES(0, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0x86]);
 test!(res_0_a_, [RES(0, ByteRegister(A))], [0xCB, 0x87]);
 test!(res_0_b_, [RES(0, ByteRegister(B))], [0xCB, 0x80]);
 test!(res_0_c_, [RES(0, ByteRegister(C))], [0xCB, 0x81]);
@@ -1051,9 +777,7 @@ test!(res_0_e_, [RES(0, ByteRegister(E))], [0xCB, 0x83]);
 test!(res_0_h_, [RES(0, ByteRegister(H))], [0xCB, 0x84]);
 test!(res_0_l_, [RES(0, ByteRegister(L))], [0xCB, 0x85]);
 test!(res_0__ix_DIS__, [RES(0,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0x86], DIS: i8);
-test!(res_0__iy__, [RES(0, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0x86
-]);
+test!(res_0__iy__, [RES(0, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0x86]);
 test!(res_0__iy_DIS__, [RES(0,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0x86], DIS: i8);
 test!(res_1_a_, [RES(1, ByteRegister(A))], [0xCB, 0x8F]);
 test!(res_1_b_, [RES(1, ByteRegister(B))], [0xCB, 0x88]);
@@ -1063,13 +787,9 @@ test!(res_1_e_, [RES(1, ByteRegister(E))], [0xCB, 0x8B]);
 test!(res_1_h_, [RES(1, ByteRegister(H))], [0xCB, 0x8C]);
 test!(res_1_l_, [RES(1, ByteRegister(L))], [0xCB, 0x8D]);
 test!(res_1__hl__, [RES(1, AddressRegister(HL))], [0xCB, 0x8E]);
-test!(res_1__ix__, [RES(1, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0x8E
-]);
+test!(res_1__ix__, [RES(1, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0x8E]);
 test!(res_1__ix_DIS__, [RES(1,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0x8E], DIS: i8);
-test!(res_1__iy__, [RES(1, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0x8E
-]);
+test!(res_1__iy__, [RES(1, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0x8E]);
 test!(res_1__iy_DIS__, [RES(1,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0x8E], DIS: i8);
 test!(res_2_a_, [RES(2, ByteRegister(A))], [0xCB, 0x97]);
 test!(res_2_b_, [RES(2, ByteRegister(B))], [0xCB, 0x90]);
@@ -1079,13 +799,9 @@ test!(res_2_e_, [RES(2, ByteRegister(E))], [0xCB, 0x93]);
 test!(res_2_h_, [RES(2, ByteRegister(H))], [0xCB, 0x94]);
 test!(res_2_l_, [RES(2, ByteRegister(L))], [0xCB, 0x95]);
 test!(res_2__hl__, [RES(2, AddressRegister(HL))], [0xCB, 0x96]);
-test!(res_2__ix__, [RES(2, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0x96
-]);
+test!(res_2__ix__, [RES(2, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0x96]);
 test!(res_2__ix_DIS__, [RES(2,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0x96], DIS: i8);
-test!(res_2__iy__, [RES(2, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0x96
-]);
+test!(res_2__iy__, [RES(2, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0x96]);
 test!(res_2__iy_DIS__, [RES(2,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0x96], DIS: i8);
 test!(res_3_a_, [RES(3, ByteRegister(A))], [0xCB, 0x9F]);
 test!(res_3_b_, [RES(3, ByteRegister(B))], [0xCB, 0x98]);
@@ -1095,13 +811,9 @@ test!(res_3_e_, [RES(3, ByteRegister(E))], [0xCB, 0x9B]);
 test!(res_3_h_, [RES(3, ByteRegister(H))], [0xCB, 0x9C]);
 test!(res_3_l_, [RES(3, ByteRegister(L))], [0xCB, 0x9D]);
 test!(res_3__hl__, [RES(3, AddressRegister(HL))], [0xCB, 0x9E]);
-test!(res_3__ix__, [RES(3, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0x9E
-]);
+test!(res_3__ix__, [RES(3, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0x9E]);
 test!(res_3__ix_DIS__, [RES(3,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0x9E], DIS: i8);
-test!(res_3__iy__, [RES(3, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0x9E
-]);
+test!(res_3__iy__, [RES(3, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0x9E]);
 test!(res_3__iy_DIS__, [RES(3,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0x9E], DIS: i8);
 test!(res_4_a_, [RES(4, ByteRegister(A))], [0xCB, 0xA7]);
 test!(res_4_b_, [RES(4, ByteRegister(B))], [0xCB, 0xA0]);
@@ -1111,13 +823,9 @@ test!(res_4_e_, [RES(4, ByteRegister(E))], [0xCB, 0xA3]);
 test!(res_4_h_, [RES(4, ByteRegister(H))], [0xCB, 0xA4]);
 test!(res_4_l_, [RES(4, ByteRegister(L))], [0xCB, 0xA5]);
 test!(res_4__hl__, [RES(4, AddressRegister(HL))], [0xCB, 0xA6]);
-test!(res_4__ix__, [RES(4, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0xA6
-]);
+test!(res_4__ix__, [RES(4, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0xA6]);
 test!(res_4__ix_DIS__, [RES(4,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0xA6], DIS: i8);
-test!(res_4__iy__, [RES(4, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0xA6
-]);
+test!(res_4__iy__, [RES(4, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0xA6]);
 test!(res_4__iy_DIS__, [RES(4,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0xA6], DIS: i8);
 test!(res_5_a_, [RES(5, ByteRegister(A))], [0xCB, 0xAF]);
 test!(res_5_b_, [RES(5, ByteRegister(B))], [0xCB, 0xA8]);
@@ -1127,13 +835,9 @@ test!(res_5_e_, [RES(5, ByteRegister(E))], [0xCB, 0xAB]);
 test!(res_5_h_, [RES(5, ByteRegister(H))], [0xCB, 0xAC]);
 test!(res_5_l_, [RES(5, ByteRegister(L))], [0xCB, 0xAD]);
 test!(res_5__hl__, [RES(5, AddressRegister(HL))], [0xCB, 0xAE]);
-test!(res_5__ix__, [RES(5, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0xAE
-]);
+test!(res_5__ix__, [RES(5, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0xAE]);
 test!(res_5__ix_DIS__, [RES(5,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0xAE], DIS: i8);
-test!(res_5__iy__, [RES(5, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0xAE
-]);
+test!(res_5__iy__, [RES(5, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0xAE]);
 test!(res_5__iy_DIS__, [RES(5,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0xAE], DIS: i8);
 test!(res_6_a_, [RES(6, ByteRegister(A))], [0xCB, 0xB7]);
 test!(res_6_b_, [RES(6, ByteRegister(B))], [0xCB, 0xB0]);
@@ -1143,13 +847,9 @@ test!(res_6_e_, [RES(6, ByteRegister(E))], [0xCB, 0xB3]);
 test!(res_6_h_, [RES(6, ByteRegister(H))], [0xCB, 0xB4]);
 test!(res_6_l_, [RES(6, ByteRegister(L))], [0xCB, 0xB5]);
 test!(res_6__hl__, [RES(6, AddressRegister(HL))], [0xCB, 0xB6]);
-test!(res_6__ix__, [RES(6, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0xB6
-]);
+test!(res_6__ix__, [RES(6, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0xB6]);
 test!(res_6__ix_DIS__, [RES(6,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0xB6], DIS: i8);
-test!(res_6__iy__, [RES(6, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0xB6
-]);
+test!(res_6__iy__, [RES(6, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0xB6]);
 test!(res_6__iy_DIS__, [RES(6,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0xB6], DIS: i8);
 test!(res_7_a_, [RES(7, ByteRegister(A))], [0xCB, 0xBF]);
 test!(res_7_b_, [RES(7, ByteRegister(B))], [0xCB, 0xB8]);
@@ -1159,13 +859,9 @@ test!(res_7_e_, [RES(7, ByteRegister(E))], [0xCB, 0xBB]);
 test!(res_7_h_, [RES(7, ByteRegister(H))], [0xCB, 0xBC]);
 test!(res_7_l_, [RES(7, ByteRegister(L))], [0xCB, 0xBD]);
 test!(res_7__hl__, [RES(7, AddressRegister(HL))], [0xCB, 0xBE]);
-test!(res_7__ix__, [RES(7, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0xBE
-]);
+test!(res_7__ix__, [RES(7, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0xBE]);
 test!(res_7__ix_DIS__, [RES(7,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0xBE], DIS: i8);
-test!(res_7__iy__, [RES(7, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0xBE
-]);
+test!(res_7__iy__, [RES(7, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0xBE]);
 test!(res_7__iy_DIS__, [RES(7,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0xBE], DIS: i8);
 test!(ret, [RET(None)], [0xC9]);
 test!(ret_c_, [RET(Some(Condition::C))], [0xD8]);
@@ -1179,12 +875,8 @@ test!(ret_z_, [RET(Some(Condition::Z))], [0xC8]);
 test!(reti, [RETI], [0xED, 0x4D]);
 test!(retn, [RETN], [0xED, 0x45]);
 test!(rl__hl__, [RL(AddressRegister(HL))], [0xCB, 0x16]);
-test!(rl__ix__, [RL(AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0x16
-]);
-test!(rl__iy__, [RL(AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0x16
-]);
+test!(rl__ix__, [RL(AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0x16]);
+test!(rl__iy__, [RL(AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0x16]);
 test!(rl__ix_DIS__, [RL(AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0x16], DIS: i8);
 test!(rl__iy_DIS__, [RL(AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0x16], DIS: i8);
 test!(rl_a_, [RL(ByteRegister(A))], [0xCB, 0x17]);
@@ -1199,13 +891,9 @@ test!(rl_hl_, [RL(WordRegister(HL))], [0xCB, 0x15, 0xCB, 0x14]);
 test!(rl_l_, [RL(ByteRegister(L))], [0xCB, 0x15]);
 test!(rla, [RLA], [0x17]);
 test!(rlc__hl__, [RLC(AddressRegister(HL))], [0xCB, 0x06]);
-test!(rlc__ix__, [RLC(AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0x06
-]);
+test!(rlc__ix__, [RLC(AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0x06]);
 test!(rlc__ix_DIS__, [RLC(AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0x06], DIS: i8);
-test!(rlc__iy__, [RLC(AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0x06
-]);
+test!(rlc__iy__, [RLC(AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0x06]);
 test!(rlc__iy_DIS__, [RLC(AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0x06], DIS: i8);
 test!(rlc_a_, [RLC(ByteRegister(A))], [0xCB, 0x07]);
 test!(rlc_b_, [RLC(ByteRegister(B))], [0xCB, 0x00]);
@@ -1217,13 +905,9 @@ test!(rlc_l_, [RLC(ByteRegister(L))], [0xCB, 0x05]);
 test!(rlca, [RLCA], [0x07]);
 test!(rld, [RLD], [0xED, 0x6F]);
 test!(rr__hl__, [RR(AddressRegister(HL))], [0xCB, 0x1E]);
-test!(rr__ix__, [RR(AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0x1E
-]);
+test!(rr__ix__, [RR(AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0x1E]);
 test!(rr__ix_DIS__, [RR(AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0x1E], DIS: i8);
-test!(rr__iy__, [RR(AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0x1E
-]);
+test!(rr__iy__, [RR(AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0x1E]);
 test!(rr__iy_DIS__, [RR(AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0x1E], DIS: i8);
 test!(rr_a_, [RR(ByteRegister(A))], [0xCB, 0x1F]);
 test!(rr_b_, [RR(ByteRegister(B))], [0xCB, 0x18]);
@@ -1237,13 +921,9 @@ test!(rr_hl_, [RR(WordRegister(HL))], [0xCB, 0x1C, 0xCB, 0x1D]);
 test!(rr_l_, [RR(ByteRegister(L))], [0xCB, 0x1D]);
 test!(rra, [RRA], [0x1F]);
 test!(rrc__hl__, [RRC(AddressRegister(HL))], [0xCB, 0x0E]);
-test!(rrc__ix__, [RRC(AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0x0E
-]);
+test!(rrc__ix__, [RRC(AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0x0E]);
 test!(rrc__ix_DIS__, [RRC(AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0x0E], DIS: i8);
-test!(rrc__iy__, [RRC(AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0x0E
-]);
+test!(rrc__iy__, [RRC(AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0x0E]);
 test!(rrc__iy_DIS__, [RRC(AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0x0E], DIS: i8);
 test!(rrc_a_, [RRC(ByteRegister(A))], [0xCB, 0x0F]);
 test!(rrc_b_, [RRC(ByteRegister(B))], [0xCB, 0x08]);
@@ -1262,16 +942,10 @@ test!(rst_32_, [RST(32)], [0xE7]);
 test!(rst_40_, [RST(40)], [0xEF]);
 test!(rst_48_, [RST(48)], [0xF7]);
 test!(rst_56_, [RST(56)], [0xFF]);
-test!(sbc_a__hl__, [SBC(ByteRegister(A), AddressRegister(HL))], [
-	0x9E
-]);
-test!(sbc_a__ix__, [SBC(ByteRegister(A), AddressRegister(IX))], [
-	0xDD, 0x9E, 0x00
-]);
+test!(sbc_a__hl__, [SBC(ByteRegister(A), AddressRegister(HL))], [0x9E]);
+test!(sbc_a__ix__, [SBC(ByteRegister(A), AddressRegister(IX))], [0xDD, 0x9E, 0x00]);
 test!(sbc_a__ix_DIS__, [SBC(ByteRegister(A),AddressRegisterWithOffset(IX, DIS))], [0xDD, 0x9E, DIS], DIS: i8);
-test!(sbc_a__iy__, [SBC(ByteRegister(A), AddressRegister(IY))], [
-	0xFD, 0x9E, 0x00
-]);
+test!(sbc_a__iy__, [SBC(ByteRegister(A), AddressRegister(IY))], [0xFD, 0x9E, 0x00]);
 test!(sbc_a__iy_DIS__, [SBC(ByteRegister(A),AddressRegisterWithOffset(IY, DIS))], [0xFD, 0x9E, DIS], DIS: i8);
 test!(sbc_a_a_, [SBC(ByteRegister(A), ByteRegister(A))], [0x9F]);
 test!(sbc_a_b_, [SBC(ByteRegister(A), ByteRegister(B))], [0x98]);
@@ -1300,27 +974,15 @@ test_ub!(
 	[0xFD, 0x9D]
 );
 test!(sbc_a_l_, [SBC(ByteRegister(A), ByteRegister(L))], [0x9D]);
-test!(sbc_hl_bc_, [SBC(WordRegister(HL), WordRegister(BC))], [
-	0xED, 0x42
-]);
-test!(sbc_hl_de_, [SBC(WordRegister(HL), WordRegister(DE))], [
-	0xED, 0x52
-]);
-test!(sbc_hl_hl_, [SBC(WordRegister(HL), WordRegister(HL))], [
-	0xED, 0x62
-]);
-test!(sbc_hl_sp_, [SBC(WordRegister(HL), WordRegister(SP))], [
-	0xED, 0x72
-]);
+test!(sbc_hl_bc_, [SBC(WordRegister(HL), WordRegister(BC))], [0xED, 0x42]);
+test!(sbc_hl_de_, [SBC(WordRegister(HL), WordRegister(DE))], [0xED, 0x52]);
+test!(sbc_hl_hl_, [SBC(WordRegister(HL), WordRegister(HL))], [0xED, 0x62]);
+test!(sbc_hl_sp_, [SBC(WordRegister(HL), WordRegister(SP))], [0xED, 0x72]);
 test!(scf, [SCF], [0x37]);
 test!(set_0__hl__, [SET(0, AddressRegister(HL))], [0xCB, 0xC6]);
-test!(set_0__ix__, [SET(0, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0xC6
-]);
+test!(set_0__ix__, [SET(0, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0xC6]);
 test!(set_0__ix_DIS__, [SET(0,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0xC6], DIS: i8);
-test!(set_0__iy__, [SET(0, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0xC6
-]);
+test!(set_0__iy__, [SET(0, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0xC6]);
 test!(set_0__iy_DIS__, [SET(0,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0xC6], DIS: i8);
 test!(set_0_a_, [SET(0, ByteRegister(A))], [0xCB, 0xC7]);
 test!(set_0_b_, [SET(0, ByteRegister(B))], [0xCB, 0xC0]);
@@ -1330,13 +992,9 @@ test!(set_0_e_, [SET(0, ByteRegister(E))], [0xCB, 0xC3]);
 test!(set_0_h_, [SET(0, ByteRegister(H))], [0xCB, 0xC4]);
 test!(set_0_l_, [SET(0, ByteRegister(L))], [0xCB, 0xC5]);
 test!(set_1__hl__, [SET(1, AddressRegister(HL))], [0xCB, 0xCE]);
-test!(set_1__ix__, [SET(1, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0xCE
-]);
+test!(set_1__ix__, [SET(1, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0xCE]);
 test!(set_1__ix_DIS__, [SET(1,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0xCE], DIS: i8);
-test!(set_1__iy__, [SET(1, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0xCE
-]);
+test!(set_1__iy__, [SET(1, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0xCE]);
 test!(set_1__iy_DIS__, [SET(1,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0xCE], DIS: i8);
 test!(set_1_a_, [SET(1, ByteRegister(A))], [0xCB, 0xCF]);
 test!(set_1_b_, [SET(1, ByteRegister(B))], [0xCB, 0xC8]);
@@ -1346,13 +1004,9 @@ test!(set_1_e_, [SET(1, ByteRegister(E))], [0xCB, 0xCB]);
 test!(set_1_h_, [SET(1, ByteRegister(H))], [0xCB, 0xCC]);
 test!(set_1_l_, [SET(1, ByteRegister(L))], [0xCB, 0xCD]);
 test!(set_2__hl__, [SET(2, AddressRegister(HL))], [0xCB, 0xD6]);
-test!(set_2__ix__, [SET(2, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0xD6
-]);
+test!(set_2__ix__, [SET(2, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0xD6]);
 test!(set_2__ix_DIS__, [SET(2,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0xD6], DIS: i8);
-test!(set_2__iy__, [SET(2, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0xD6
-]);
+test!(set_2__iy__, [SET(2, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0xD6]);
 test!(set_2__iy_DIS__, [SET(2,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0xD6], DIS: i8);
 test!(set_2_a_, [SET(2, ByteRegister(A))], [0xCB, 0xD7]);
 test!(set_2_b_, [SET(2, ByteRegister(B))], [0xCB, 0xD0]);
@@ -1362,13 +1016,9 @@ test!(set_2_e_, [SET(2, ByteRegister(E))], [0xCB, 0xD3]);
 test!(set_2_h_, [SET(2, ByteRegister(H))], [0xCB, 0xD4]);
 test!(set_2_l_, [SET(2, ByteRegister(L))], [0xCB, 0xD5]);
 test!(set_3__hl__, [SET(3, AddressRegister(HL))], [0xCB, 0xDE]);
-test!(set_3__ix__, [SET(3, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0xDE
-]);
+test!(set_3__ix__, [SET(3, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0xDE]);
 test!(set_3__ix_DIS__, [SET(3,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0xDE], DIS: i8);
-test!(set_3__iy__, [SET(3, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0xDE
-]);
+test!(set_3__iy__, [SET(3, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0xDE]);
 test!(set_3__iy_DIS__, [SET(3,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0xDE], DIS: i8);
 test!(set_3_a_, [SET(3, ByteRegister(A))], [0xCB, 0xDF]);
 test!(set_3_b_, [SET(3, ByteRegister(B))], [0xCB, 0xD8]);
@@ -1378,13 +1028,9 @@ test!(set_3_e_, [SET(3, ByteRegister(E))], [0xCB, 0xDB]);
 test!(set_3_h_, [SET(3, ByteRegister(H))], [0xCB, 0xDC]);
 test!(set_3_l_, [SET(3, ByteRegister(L))], [0xCB, 0xDD]);
 test!(set_4__hl__, [SET(4, AddressRegister(HL))], [0xCB, 0xE6]);
-test!(set_4__ix__, [SET(4, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0xE6
-]);
+test!(set_4__ix__, [SET(4, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0xE6]);
 test!(set_4__ix_DIS__, [SET(4,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0xE6], DIS: i8);
-test!(set_4__iy__, [SET(4, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0xE6
-]);
+test!(set_4__iy__, [SET(4, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0xE6]);
 test!(set_4__iy_DIS__, [SET(4,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0xE6], DIS: i8);
 test!(set_4_a_, [SET(4, ByteRegister(A))], [0xCB, 0xE7]);
 test!(set_4_b_, [SET(4, ByteRegister(B))], [0xCB, 0xE0]);
@@ -1394,13 +1040,9 @@ test!(set_4_e_, [SET(4, ByteRegister(E))], [0xCB, 0xE3]);
 test!(set_4_h_, [SET(4, ByteRegister(H))], [0xCB, 0xE4]);
 test!(set_4_l_, [SET(4, ByteRegister(L))], [0xCB, 0xE5]);
 test!(set_5__hl__, [SET(5, AddressRegister(HL))], [0xCB, 0xEE]);
-test!(set_5__ix__, [SET(5, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0xEE
-]);
+test!(set_5__ix__, [SET(5, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0xEE]);
 test!(set_5__ix_DIS__, [SET(5,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0xEE], DIS: i8);
-test!(set_5__iy__, [SET(5, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0xEE
-]);
+test!(set_5__iy__, [SET(5, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0xEE]);
 test!(set_5__iy_DIS__, [SET(5,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0xEE], DIS: i8);
 test!(set_5_a_, [SET(5, ByteRegister(A))], [0xCB, 0xEF]);
 test!(set_5_b_, [SET(5, ByteRegister(B))], [0xCB, 0xE8]);
@@ -1410,13 +1052,9 @@ test!(set_5_e_, [SET(5, ByteRegister(E))], [0xCB, 0xEB]);
 test!(set_5_h_, [SET(5, ByteRegister(H))], [0xCB, 0xEC]);
 test!(set_5_l_, [SET(5, ByteRegister(L))], [0xCB, 0xED]);
 test!(set_6__hl__, [SET(6, AddressRegister(HL))], [0xCB, 0xF6]);
-test!(set_6__ix__, [SET(6, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0xF6
-]);
+test!(set_6__ix__, [SET(6, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0xF6]);
 test!(set_6__ix_DIS__, [SET(6,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0xF6], DIS: i8);
-test!(set_6__iy__, [SET(6, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0xF6
-]);
+test!(set_6__iy__, [SET(6, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0xF6]);
 test!(set_6__iy_DIS__, [SET(6,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0xF6], DIS: i8);
 test!(set_6_a_, [SET(6, ByteRegister(A))], [0xCB, 0xF7]);
 test!(set_6_b_, [SET(6, ByteRegister(B))], [0xCB, 0xF0]);
@@ -1426,13 +1064,9 @@ test!(set_6_e_, [SET(6, ByteRegister(E))], [0xCB, 0xF3]);
 test!(set_6_h_, [SET(6, ByteRegister(H))], [0xCB, 0xF4]);
 test!(set_6_l_, [SET(6, ByteRegister(L))], [0xCB, 0xF5]);
 test!(set_7__hl__, [SET(7, AddressRegister(HL))], [0xCB, 0xFE]);
-test!(set_7__ix__, [SET(7, AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0xFE
-]);
+test!(set_7__ix__, [SET(7, AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0xFE]);
 test!(set_7__ix_DIS__, [SET(7,AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0xFE], DIS: i8);
-test!(set_7__iy__, [SET(7, AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0xFE
-]);
+test!(set_7__iy__, [SET(7, AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0xFE]);
 test!(set_7__iy_DIS__, [SET(7,AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0xFE], DIS: i8);
 test!(set_7_a_, [SET(7, ByteRegister(A))], [0xCB, 0xFF]);
 test!(set_7_b_, [SET(7, ByteRegister(B))], [0xCB, 0xF8]);
@@ -1452,13 +1086,9 @@ test!(sla_h_, [SLA(ByteRegister(H))], [0xCB, 0x24]);
 test!(sla_hl_, [SLA(WordRegister(HL))], [0x29]);
 test!(sla_l_, [SLA(ByteRegister(L))], [0xCB, 0x25]);
 test!(sla__hl__, [SLA(AddressRegister(HL))], [0xCB, 0x26]);
-test!(sla__ix__, [SLA(AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0x26
-]);
+test!(sla__ix__, [SLA(AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0x26]);
 test!(sla__ix_DIS__, [SLA(AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0x26], DIS: i8);
-test!(sla__iy__, [SLA(AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0x26
-]);
+test!(sla__iy__, [SLA(AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0x26]);
 test!(sla__iy_DIS__, [SLA(AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0x26], DIS: i8);
 test_ub!(sll_a_, [SLL(ByteRegister(A))], [0xCB, 0x37]);
 test_ub!(sll_b_, [SLL(ByteRegister(B))], [0xCB, 0x30]);
@@ -1471,13 +1101,9 @@ test_ub!(sll_h_, [SLL(ByteRegister(H))], [0xCB, 0x34]);
 test_ub!(sll_hl_, [SLL(WordRegister(HL))], [0xCB, 0x35, 0xCB, 0x14]);
 test_ub!(sll_l_, [SLL(ByteRegister(L))], [0xCB, 0x35]);
 test_ub!(sll__hl__, [SLL(AddressRegister(HL))], [0xCB, 0x36]);
-test_ub!(sll__ix__, [SLL(AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0x36
-]);
+test_ub!(sll__ix__, [SLL(AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0x36]);
 test_ub!(sll__ix_DIS__, [SLL(AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0x36], DIS: i8);
-test_ub!(sll__iy__, [SLL(AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0x36
-]);
+test_ub!(sll__iy__, [SLL(AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0x36]);
 test_ub!(sll__iy_DIS__, [SLL(AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0x36], DIS: i8);
 test!(sra_a_, [SRA(ByteRegister(A))], [0xCB, 0x2F]);
 test!(sra_b_, [SRA(ByteRegister(B))], [0xCB, 0x28]);
@@ -1490,13 +1116,9 @@ test!(sra_h_, [SRA(ByteRegister(H))], [0xCB, 0x2C]);
 test!(sra_hl_, [SRA(WordRegister(HL))], [0xCB, 0x2C, 0xCB, 0x1D]);
 test!(sra_l_, [SRA(ByteRegister(L))], [0xCB, 0x2D]);
 test!(sra__hl__, [SRA(AddressRegister(HL))], [0xCB, 0x2E]);
-test!(sra__ix__, [SRA(AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0x2E
-]);
+test!(sra__ix__, [SRA(AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0x2E]);
 test!(sra__ix_DIS__, [SRA(AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0x2E], DIS: i8);
-test!(sra__iy__, [SRA(AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0x2E
-]);
+test!(sra__iy__, [SRA(AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0x2E]);
 test!(sra__iy_DIS__, [SRA(AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0x2E], DIS: i8);
 test!(srl_a_, [SRL(ByteRegister(A))], [0xCB, 0x3F]);
 test!(srl_b_, [SRL(ByteRegister(B))], [0xCB, 0x38]);
@@ -1508,13 +1130,9 @@ test!(srl_bc_, [SRL(WordRegister(BC))], [0xCB, 0x38, 0xCB, 0x19]);
 test!(srl_de_, [SRL(WordRegister(DE))], [0xCB, 0x3A, 0xCB, 0x1B]);
 test!(srl_hl_, [SRL(WordRegister(HL))], [0xCB, 0x3C, 0xCB, 0x1D]);
 test!(srl__hl__, [SRL(AddressRegister(HL))], [0xCB, 0x3E]);
-test!(srl__ix__, [SRL(AddressRegister(IX))], [
-	0xDD, 0xCB, 0x00, 0x3E
-]);
+test!(srl__ix__, [SRL(AddressRegister(IX))], [0xDD, 0xCB, 0x00, 0x3E]);
 test!(srl__ix_DIS__, [SRL(AddressRegisterWithOffset(IX, DIS))], [0xDD, 0xCB, DIS, 0x3E], DIS: i8);
-test!(srl__iy__, [SRL(AddressRegister(IY))], [
-	0xFD, 0xCB, 0x00, 0x3E
-]);
+test!(srl__iy__, [SRL(AddressRegister(IY))], [0xFD, 0xCB, 0x00, 0x3E]);
 test!(srl__iy_DIS__, [SRL(AddressRegisterWithOffset(IY, DIS))], [0xFD, 0xCB, DIS, 0x3E], DIS: i8);
 test!(srl_l_, [SRL(ByteRegister(L))], [0xCB, 0x3D]);
 test!(sub_a_, [SUB(ByteRegister(A))], [0x97]);
@@ -1552,9 +1170,7 @@ test!(xor_l_, [XOR(ByteRegister(L))], [0xAD]);
 test!(ld__hl__N_, [LD(AddressRegister(HL),Constant(n as i32))], [0x36, n], n: u8);
 test!(ld__ix__N_, [LD(AddressRegister(IX),Constant(n as i32))], [0xDD, 0x36, 0x00, n], n: u8);
 test!(ld__iy__N_, [LD(AddressRegister(IY),Constant(n as i32))], [0xFD, 0x36, 0x00, n], n: u8);
-test!(ld_a__bc__, [LD(ByteRegister(A), AddressRegister(BC))], [
-	0x0A
-]);
+test!(ld_a__bc__, [LD(ByteRegister(A), AddressRegister(BC))], [0x0A]);
 test!(inc__ix_DIS__, [INC(AddressRegisterWithOffset(IX, DIS))], [0xDD, 0x34, DIS], DIS: i8);
 test!(inc__iy_DIS__, [INC(AddressRegisterWithOffset(IY, DIS))], [0xFD, 0x34, DIS], DIS: i8);
 test!(in_a__N__, [IN(ByteRegister(A),Port(n))], [0xDB, n], n: u8);
@@ -1620,37 +1236,19 @@ test!(ld_d__ix_DIS__, [LD(ByteRegister(D),AddressRegisterWithOffset(IX, DIS))], 
 test!(ld_d__iy_DIS__, [LD(ByteRegister(D),AddressRegisterWithOffset(IY, DIS))], [0xFD, 0x56, DIS], DIS: i8);
 test!(ld_d_N_, [LD(ByteRegister(D),Constant(n as i32))], [0x16, n], n: u8);
 test!(ld_de__NN__, [LD(WordRegister(DE),Address(NN))], [0xED, 0x5B, (NN & 0xFF), ((NN >> 8) & 0xFF)], NN: u16);
-test!(ld_de__hl__, [LD(WordRegister(DE), AddressRegister(HL))], [
-	0x5E, 0x23, 0x56, 0x2B
-]);
-test!(ld_de__ix__, [LD(WordRegister(DE), AddressRegister(IX))], [
-	0xDD, 0x5E, 0x00, 0xDD, 0x56, 0x01
-]);
+test!(ld_de__hl__, [LD(WordRegister(DE), AddressRegister(HL))], [0x5E, 0x23, 0x56, 0x2B]);
+test!(ld_de__ix__, [LD(WordRegister(DE), AddressRegister(IX))], [0xDD, 0x5E, 0x00, 0xDD, 0x56, 0x01]);
 test!(ld_de__ix_DIS__, [LD(WordRegister(DE),AddressRegisterWithOffset(IX, DIS))], [0xDD, 0x5E, DIS, 0xDD, 0x56, DIS+1], DIS: i8);
-test!(ld_de__iy__, [LD(WordRegister(DE), AddressRegister(IY))], [
-	0xFD, 0x5E, 0x00, 0xFD, 0x56, 0x01
-]);
+test!(ld_de__iy__, [LD(WordRegister(DE), AddressRegister(IY))], [0xFD, 0x5E, 0x00, 0xFD, 0x56, 0x01]);
 test!(ld_de__iy_DIS__, [LD(WordRegister(DE),AddressRegisterWithOffset(IY, DIS))], [0xFD, 0x5E, DIS, 0xFD, 0x56, DIS+1], DIS: i8);
 test!(ld_de_NN_, [LD(WordRegister(DE),Constant(NN as i32))], [0x11, (NN & 0xFF), ((NN >> 8) & 0xFF)], NN: u16);
-test!(ld_de_bc_, [LD(WordRegister(DE), WordRegister(BC))], [
-	0x50, 0x59
-]);
-test!(ld_de_de_, [LD(WordRegister(DE), WordRegister(DE))], [
-	0x52, 0x5B
-]);
-test!(ld_de_hl_, [LD(WordRegister(DE), WordRegister(HL))], [
-	0x54, 0x5D
-]);
-test!(ld_de_ix_, [LD(WordRegister(DE), WordRegister(IX))], [
-	0xDD, 0x54, 0xDD, 0x5D
-]);
-test!(ld_de_iy_, [LD(WordRegister(DE), WordRegister(IY))], [
-	0xFD, 0x54, 0xFD, 0x5D
-]);
+test!(ld_de_bc_, [LD(WordRegister(DE), WordRegister(BC))], [0x50, 0x59]);
+test!(ld_de_de_, [LD(WordRegister(DE), WordRegister(DE))], [0x52, 0x5B]);
+test!(ld_de_hl_, [LD(WordRegister(DE), WordRegister(HL))], [0x54, 0x5D]);
+test!(ld_de_ix_, [LD(WordRegister(DE), WordRegister(IX))], [0xDD, 0x54, 0xDD, 0x5D]);
+test!(ld_de_iy_, [LD(WordRegister(DE), WordRegister(IY))], [0xFD, 0x54, 0xFD, 0x5D]);
 test!(ld_e__ix_DIS__, [LD(ByteRegister(E),AddressRegisterWithOffset(IX, DIS))], [0xDD, 0x5E, DIS], DIS: i8);
-test!(ld_e__iy__, [LD(ByteRegister(E), AddressRegister(IY))], [
-	0xFD, 0x5E, 0x00
-]);
+test!(ld_e__iy__, [LD(ByteRegister(E), AddressRegister(IY))], [0xFD, 0x5E, 0x00]);
 test!(ld_e__iy_DIS__, [LD(ByteRegister(E),AddressRegisterWithOffset(IY, DIS))], [0xFD, 0x5E, DIS], DIS: i8);
 test!(ld_e_N_, [LD(ByteRegister(E),Constant(n as i32))], [0x1E, n], n: u8);
 test!(ld_h__ix_DIS__, [LD(ByteRegister(H),AddressRegisterWithOffset(IX, DIS))], [0xDD, 0x66, DIS], DIS: i8);

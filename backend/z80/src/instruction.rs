@@ -1,3 +1,5 @@
+use assembler_common::InstructionLister;
+
 #[derive(Debug, Clone)]
 pub enum ByteRegister {
 	A,
@@ -62,7 +64,7 @@ pub enum Condition {
 	M,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, InstructionLister)]
 pub enum Instruction {
 	LD(Operand, Operand),
 	PUSH(Operand),

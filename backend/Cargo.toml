@@ -7,4 +7,4 @@ edition = "2021"
 
 [dependencies]
 z80 = { path = "z80" }
-
+assembler-common = { path = "assembler-common" }

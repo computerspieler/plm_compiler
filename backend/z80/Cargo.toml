@@ -4,3 +4,12 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+assembler-common = { path = "../assembler-common" }
+
+[lib]
+name = "z80"
+path = "src/lib.rs"
+
+[[bin]]
+name = "z80"
+path = "src/main.rs"

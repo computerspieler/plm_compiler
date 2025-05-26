@@ -1,0 +1,15 @@
+[package]
+name = "assembler-common"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+nom = "8.0.0"
+proc-macro2 = "1.0.95"
+quote = "1.0.40"
+syn = "2.0.101"
+
+[lib]
+name = "assembler_common"
+path = "src/lib.rs"
+proc-macro = true
