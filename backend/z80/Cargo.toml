@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 assembler-common = { path = "../assembler-common" }
+nom = "8.0.0"
 
 [lib]
 name = "z80"

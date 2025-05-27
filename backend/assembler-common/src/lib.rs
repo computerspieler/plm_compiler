@@ -3,7 +3,7 @@ use proc_macro2::Span;
 use quote::quote;
 use syn::{parse_macro_input, Type, Data, DeriveInput, Fields, Ident, LitStr};
 
-fn operand_quote(i: usize, name: Option<&Ident>, field_type: &Type) -> proc_macro2::TokenStream {
+fn operand_quote(i: usize, name: Option<&Ident>, _field_type: &Type) -> proc_macro2::TokenStream {
 	let default_name = Ident::new(
 		format!("op{}", i).as_str(),
 		Span::call_site()
@@ -82,6 +82,149 @@ pub fn instruction_lister(input: TokenStream) -> TokenStream {
 		pub fn list_instructions() {
 			println!("Here's the list of all the supported instructions:");
 			#(#variant_matches)*
+		}
+	};
+
+	TokenStream::from(expanded)
+}
+
+#[proc_macro_derive(InstructionParser)]
+pub fn instruction_parser(input: TokenStream) -> TokenStream {
+	let input = parse_macro_input!(input as DeriveInput);
+	
+	let name = input.ident;
+	let variants = match input.data {
+		Data::Enum(ref data_enum) => &data_enum.variants,
+		_ => {
+			return syn::Error::new_spanned(
+				name,
+				"InstructionParser can only be used with enums",
+			)
+			.to_compile_error()
+			.into();
+		}
+	};
+
+	let instructions_parser = variants.iter().map(|variant| {
+		let variant_name = &variant.ident;
+
+		let fields = match &variant.fields {
+            Fields::Unit => None,
+            Fields::Named(fields) => Some(&fields.named),
+            Fields::Unnamed(fields) => Some(&fields.unnamed),
+        };
+
+		if let Some(fields) = fields {
+			//TODO
+			let _fields = fields.iter().map(|_field| {
+				quote! {
+
+				}
+			});
+			quote! {
+				tag_no_case(stringify!(#variant_name))
+			}
+		} else {
+			quote! {
+				tag_no_case(stringify!(#variant_name))
+			}
+		}
+	});
+
+	let expanded = quote! {
+		impl #name {
+			pub fn parser<'a>(
+				input: &'a str
+			) -> nom::IResult<&'a str, &'a str> {
+				use nom::{
+					Parser,
+					bytes::complete::tag_no_case,
+					branch::alt,
+					sequence::tuple
+				};
+				
+				alt([
+					#(#instructions_parser),*
+				]).parse(input)
+			}
+		}
+	};
+
+	TokenStream::from(expanded)
+}
+
+
+#[proc_macro_derive(IdentifierParser, attributes(rename))]
+pub fn identifier_parser(input: TokenStream) -> TokenStream {
+	let input = parse_macro_input!(input as DeriveInput);
+	
+	let name = input.ident;
+	let variants = match input.data {
+		Data::Enum(ref data_enum) => &data_enum.variants,
+		_ => {
+			return syn::Error::new_spanned(
+				name,
+				"IdentifierParser can only be used with enums",
+			)
+			.to_compile_error()
+			.into();
+		}
+	};
+
+	let nb_invalid_variants = variants.iter().filter(|variant| -> bool {
+		match &variant.fields {
+		Fields::Unit => false,
+		_ => true
+		}
+	}).count();
+
+	if nb_invalid_variants > 0 {
+		return syn::Error::new_spanned(
+			name,
+			"IdentifierParser doesn't support variants with fields",
+		)
+			.to_compile_error()
+			.into();
+	}
+
+	let instructions_parser = variants.iter().map(|variant| {
+		let variant_name = &variant.ident;
+		
+		let mut variant_text_name: Option<LitStr> = None;
+		for attr in variant.attrs.iter() {
+			if attr.path().is_ident("rename") {
+				variant_text_name = Some(attr.parse_args().unwrap());
+			}
+		}
+
+		if let Some(txt) = variant_text_name {
+			quote! {
+				value(#name::#variant_name, tag_no_case(#txt))
+			}
+		} else {
+			quote! {
+				value(#name::#variant_name, tag_no_case(stringify!(#variant_name)))
+			}
+		}
+	});
+
+	let expanded = quote! {
+		impl #name {
+			pub fn parser<'a>(
+				input: &'a str
+			) -> nom::IResult<&'a str, #name> {
+				use nom::{
+					Parser,
+					bytes::complete::tag_no_case,
+					branch::alt,
+					combinator::value,
+					sequence::tuple
+				};
+				
+				alt([
+					#(#instructions_parser),*
+				]).parse(input)
+			}
 		}
 	};
 

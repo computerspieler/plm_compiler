@@ -4,11 +4,9 @@ use std::fs::File;
 use std::io::BufReader;
 use std::process::exit;
 
-mod parser;
-
 fn show_help_and_die() {
 	println!(concat!(
-		"./zasm [ARGUMENTS] [INPUT FILES]\n",
+		"./z80 [ARGUMENTS] [INPUT FILES]\n",
 		"-h: Show this message\n",
 		"-l: List all the supported instructions\n",
 		"-o [FILE]: Set the output file",
@@ -93,7 +91,7 @@ fn main() {
 				panic!("Unable to open {}: {}", path, e);
 			}
 			| Ok(file) => {
-                let reader = BufReader::new(file);
+                let _reader = BufReader::new(file);
 
 			}
 		}
