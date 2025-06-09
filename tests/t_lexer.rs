@@ -1,4 +1,5 @@
 use plm::lexer::*;
+use utils::token::{Position, Token};
 
 macro_rules! assert_token {
 	($lexer: ident, $val: pat) => {

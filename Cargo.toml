@@ -1,5 +1,8 @@
 [workspace]
-members = ["backend"]
+members = [
+    "backend",
+    "backend/z80"
+, "utils"]
 
 [package]
 name = "plm"
@@ -8,4 +11,4 @@ edition = "2021"
 
 [dependencies]
 backend = { path = "backend" }
-
+utils = { path = "utils" }
