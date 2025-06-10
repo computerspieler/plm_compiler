@@ -1,13 +1,11 @@
 use std::collections::HashMap;
 use std::env;
 use std::fs::File;
-use std::path::Path;
 use std::process::exit;
 
-use plm::lexer::Lexer;
+use utils::{EOSDetector, lexer::Lexer};
 use plm::parser::Parser;
-use plm::preprocessor_parser::*;
-use plm::traits::*;
+use plm::{keywords, preprocessor_parser::*};
 
 fn show_help_and_die() {
 	println!(concat!(
@@ -19,6 +17,7 @@ fn show_help_and_die() {
 	exit(0);
 }
 
+#[derive(Default)]
 struct ParsedArguments {
 	input_files_path: Vec<String>,
 	output_path: Option<String>,
@@ -26,12 +25,7 @@ struct ParsedArguments {
 }
 
 fn parse_arguments() -> ParsedArguments {
-	let mut output = ParsedArguments {
-		input_files_path: Vec::new(),
-		output_path: None,
-		definitions: HashMap::new(),
-	};
-
+	let mut output = ParsedArguments::default();
 	let mut args = env::args();
 
 	args.next(); // Skip the first one, it's the executable's path
@@ -85,13 +79,17 @@ fn parse_arguments() -> ParsedArguments {
 fn main() {
 	let user_infos = parse_arguments();
 
+	if user_infos.input_files_path.len() == 0 {
+		show_help_and_die();
+	}
+
 	for path in user_infos.input_files_path {
-		match File::open(&Path::new(&path)) {
+		match File::open(&path) {
 			| Err(e) => {
 				panic!("Unable to open {}: {}", path, e);
 			}
 			| Ok(file) => {
-				let mut lex = Lexer::from_file(file);
+				let mut lex = Lexer::from_file(file, &keywords::KEYWORDS);
 				let args = parse_compiler_arguments(&mut lex);
 				dbg!(&args);
 

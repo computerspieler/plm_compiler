@@ -1,4 +1,5 @@
 pub mod token;
+pub mod lexer;
 
 pub trait KeywordHandler {
     fn is_keyword<'a>(&self, s: &'a str) -> Option<&'static str>;
@@ -15,4 +16,8 @@ impl<const N: usize> KeywordHandler for [&'static str; N] {
         }
         None
     }
+}
+
+pub trait EOSDetector: Iterator {
+	fn reached_eos(&mut self) -> bool;
 }

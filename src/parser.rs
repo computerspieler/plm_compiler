@@ -1,9 +1,12 @@
 use crate::ast::*;
-use crate::lexer::{Lexer, Position, Token};
 use crate::parser_macros::*;
+use utils::{
+	lexer::Lexer,
+	token::{Position, Token}
+};
 
-pub struct Parser {
-	lexer: Lexer,
+pub struct Parser<'a, const N: usize> {
+	lexer: Lexer<'a, [&'static str; N]>,
 	last_label: Option<String>,
 	encountered_error: bool,
 }
@@ -39,9 +42,9 @@ enum OperationType {
 	BinaryOp(BinaryOperation),
 }
 
-impl Parser {
-	pub fn new(lex: Lexer) -> Parser {
-		Parser {
+impl<'a, const N: usize> Parser<'a, N> {
+	pub fn new(lex: Lexer<'a, [&'static str; N]>) -> Self {
+		Self {
 			lexer: lex,
 			last_label: None,
 			encountered_error: false,
@@ -152,13 +155,13 @@ impl Parser {
 					minus_can_be_for_sign = true;
 
 					self.lexer.next();
-					let priority = Parser::operation_priority(&$op);
+					let priority = Self::operation_priority(&$op);
 
 					while let Some(op) = operations_stack.last() {
-						if Parser::operation_priority(op) <= priority {
+						if Self::operation_priority(op) <= priority {
 							break;
 						}
-						if Parser::pop_operation(
+						if Self::pop_operation(
 							&start_pos,
 							&mut output_stack,
 							&mut operations_stack,
@@ -371,7 +374,7 @@ impl Parser {
 		}
 
 		while operations_stack.len() > 0 {
-			if Parser::pop_operation(&start_pos, &mut output_stack, &mut operations_stack).is_none()
+			if Self::pop_operation(&start_pos, &mut output_stack, &mut operations_stack).is_none()
 			{
 				break;
 			}
@@ -1205,15 +1208,15 @@ impl Parser {
 	}
 }
 
-use crate::traits::EOSDetector;
-impl EOSDetector for Parser {
+use utils::EOSDetector;
+impl<'a, const N: usize> EOSDetector for Parser<'a, N> {
 	fn reached_eos(&mut self) -> bool {
 		!self.encountered_error && (self.lexer.reached_eos() || !self.lexer.peek().is_none())
 	}
 }
 
 use std::iter::Iterator;
-impl Iterator for Parser {
+impl<'a, const N: usize> Iterator for Parser<'a, N> {
 	type Item = Statement;
 
 	fn next(&mut self) -> Option<Statement> {

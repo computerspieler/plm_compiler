@@ -1,11 +1,10 @@
 use plm::ast::*;
-use plm::lexer::*;
-use plm::parser::*;
-use plm::traits::EOSDetector;
+use plm::{parser::Parser, keywords};
+use utils::{EOSDetector, lexer::Lexer};
 
 macro_rules! compare_ast {
 	($input: literal, $goal: expr) => {{
-		let mut parser = Parser::new(Lexer::from_string(String::from($input)));
+		let mut parser = Parser::new(Lexer::from_string(String::from($input), &keywords::KEYWORDS));
 		match ($goal) as Option<Vec<Statement>> {
 			| None => {
 				// Consumes the iterator

@@ -1,192 +1,7 @@
-#[derive(Clone, Debug)]
-pub enum Token {
-	Identifier(String),
-	Number(i32),
-	String(String),
-	Keyword(&'static str),
-
-	Dot,
-	LParan,
-	RParan,
-	Plus,
-	Minus,
-	Star,
-	Slash,
-	Comma,
-	Equal,
-	NotEqual,
-	Greater,
-	Less,
-	GreaterEqual,
-	LessEqual,
-	SemiColon,
-	Colon,
-}
-
-impl Token {
-	pub fn to_string(&self) -> String {
-		match self {
-			| Token::Identifier(s) => s.clone(),
-			| Token::Keyword(s) => s.to_string(),
-			| Token::Number(x) => x.to_string(),
-			| Token::String(s) => s.clone(),
-
-			| _ => {
-				panic!("No stringyfication for the token {:?}", self)
-			}
-		}
-	}
-
-	pub fn to_int(&self) -> i32 {
-		match self {
-			| Token::Number(x) => *x,
-
-			| _ => {
-				panic!("No conversion to an integer for the token {:?}", self)
-			}
-		}
-	}
-}
-
-const KEYWORDS_COUNT: usize = 34;
-static KEYWORDS: [&'static str; KEYWORDS_COUNT] = [
-	"ADDRESS",
-	"AND",
-	"BASED",
-	"BY",
-	"BYTE",
-	"CALL",
-	"CASE",
-	"DATA",
-	"DECLARE",
-	"DISABLE",
-	"DO",
-	"ELSE",
-	"ENABLE",
-	"END",
-	"EOF",
-	"GO",
-	"GOTO",
-	"HALT",
-	"IF",
-	"INITIAL",
-	"INTERRUPT",
-	"LABEL",
-	"LITERALLY",
-	"MINUS",
-	"MOD",
-	"NOT",
-	"OR",
-	"PLUS",
-	"PROCEDURE",
-	"RETURN",
-	"THEN",
-	"TO",
-	"WHILE",
-	"XOR",
-];
-
-#[derive(Clone, Copy, Debug)]
-pub struct Position {
-	line: usize,
-	column: usize,
-}
-
-impl Position {
-	pub fn zero() -> Self {
-		Self { line: 0, column: 0 }
-	}
-}
-
-impl std::fmt::Display for Position {
-	fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-		write!(f, "{{Line {}, Column {}}}", self.line, self.column)
-	}
-}
-
-fn print_error<T: std::fmt::Debug>(
-	pos: Position,
-	file_error: Option<ErrorKind>,
-	lexer_error: Option<T>,
-) {
-	match file_error {
-		| Some(ErrorKind::UnexpectedEof) | None => {}
-		| Some(e) => {
-			println!("Error while reading at {}: {}", pos, e.to_string());
-		}
-	}
-	match lexer_error {
-		| None => {}
-		| Some(x) => {
-			println!("Lexing error at {}: {:?}", pos, x);
-		}
-	}
-}
-
-impl Token {
-	fn from_string(pos: Position, str: String) -> Option<(Token, Position)> {
-		assert!(str.len() > 0);
-
-		// If it's an identifier
-		if Token::is_alphabetic(str.chars().nth(0).unwrap()) {
-			for i in 0..KEYWORDS_COUNT {
-				if KEYWORDS[i] == str {
-					return Some((Token::Keyword(KEYWORDS[i]), pos));
-				}
-			}
-
-			return Some((Token::Identifier(str), pos));
-		}
-
-		// If it's a value
-		if Token::is_numeric(str.chars().nth(0).unwrap()) {
-			let n = str.len();
-
-			let has_radix = "bBoOqQdDhH".contains(str.chars().nth(n - 1).unwrap_or('\0'));
-			let radixless_value = if has_radix {
-				&str[0..n - 1]
-			} else {
-				&str[0..n]
-			};
-
-			let radix = if !has_radix {
-				10
-			} else {
-				match str.chars().nth(n - 1).unwrap() {
-					| 'b' | 'B' => 2,
-					| 'q' | 'Q' | 'o' | 'O' => 8,
-					| 'd' | 'D' => 10,
-					| 'h' | 'H' => 16,
-					| _ => 10,
-				}
-			};
-
-			match i32::from_str_radix(radixless_value, radix) {
-				| Err(e) => {
-					print_error(pos, None, Some(e.kind()));
-					None
-				}
-				| Ok(x) => Some((Token::Number(x), pos)),
-			}
-		} else {
-			return None;
-		}
-	}
-
-	fn is_alphabetic(c: char) -> bool {
-		return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
-	}
-	fn is_numeric(c: char) -> bool {
-		return c >= '0' && c <= '9';
-	}
-}
-
-use core::fmt;
 use std::collections::HashMap;
-use std::fmt::Formatter;
 use std::fs::File;
 
-pub struct Lexer {
+pub struct Lexer<'a, KWH: KeywordHandler> {
 	input_file: Option<File>,
 	input_string: Option<(Vec<u8>, usize)>,
 	stash: Option<(char, Position)>,
@@ -197,10 +12,11 @@ pub struct Lexer {
 	running_macro: Option<(usize, usize)>,
 
 	peeked_token: Option<Option<(Token, Position)>>,
+	kw_handler: &'a KWH
 }
 
-impl Lexer {
-	pub fn from_file(f: File) -> Self {
+impl<'a, KWH: KeywordHandler> Lexer<'a, KWH> {
+	pub fn from_file(f: File, kw_handler: &'a KWH) -> Self {
 		Self {
 			input_file: Some(f),
 			input_string: None,
@@ -212,10 +28,11 @@ impl Lexer {
 			running_macro: None,
 
 			peeked_token: None,
+			kw_handler: kw_handler
 		}
 	}
 
-	pub fn from_string(str: String) -> Self {
+	pub fn from_string(str: String, kw_handler: &'a KWH) -> Self {
 		Self {
 			input_file: None,
 			input_string: Some((str.into_bytes(), 0)),
@@ -226,6 +43,7 @@ impl Lexer {
 			running_macro: None,
 
 			peeked_token: None,
+			kw_handler: kw_handler
 		}
 	}
 
@@ -309,7 +127,7 @@ impl Lexer {
 	}
 
 	pub fn add_macro(&mut self, keyword: String, initial_position: Position, data: String) {
-		let mut lex = Lexer::from_string(data);
+		let mut lex = Lexer::from_string(data, self.kw_handler);
 		lex.copy_macros(&self);
 		lex.cursor_position = initial_position;
 		self.macros_idx.insert(keyword, self.macros.len());
@@ -353,7 +171,7 @@ impl Lexer {
 use std::io::{Error, ErrorKind, Read};
 use std::iter::Iterator;
 
-impl Iterator for Lexer {
+impl<KWH: KeywordHandler> Iterator for Lexer<'_, KWH> {
 	type Item = (Token, Position);
 
 	fn next(&mut self) -> Option<(Token, Position)> {
@@ -388,7 +206,7 @@ impl Iterator for Lexer {
 					if self.launch_macro(&token_str) {
 						return self.next();
 					} else {
-						return Token::from_string(initial_pos.unwrap(), token_str);
+						return Token::from_string(self.kw_handler, initial_pos.unwrap(), token_str);
 					}
 				}
 			}
@@ -410,7 +228,7 @@ impl Iterator for Lexer {
 				if self.launch_macro(&token_str) {
 					return self.next();
 				} else {
-					return Token::from_string(initial_pos.unwrap(), token_str);
+					return Token::from_string(self.kw_handler, initial_pos.unwrap(), token_str);
 				}
 			}
 
@@ -570,8 +388,10 @@ impl Iterator for Lexer {
 	}
 }
 
-use crate::traits::EOSDetector;
-impl EOSDetector for Lexer {
+use crate::token::{print_error, Position, Token};
+
+use crate::{EOSDetector, KeywordHandler};
+impl<KWH: KeywordHandler> EOSDetector for Lexer<'_, KWH> {
 	fn reached_eos(&mut self) -> bool {
 		match self.peek() {
 			| Some(_) => false,
