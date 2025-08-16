@@ -1,4 +1,4 @@
-use assembler_common::{IdentifierParser, InstructionLister, InstructionParser};
+use parser_macros::{IdentifierParser, InstructionLister, InstructionParser};
 
 #[derive(Debug, Clone, IdentifierParser)]
 pub enum ByteRegister {

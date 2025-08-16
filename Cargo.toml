@@ -12,3 +12,4 @@ edition = "2021"
 [dependencies]
 backend = { path = "backend" }
 utils = { path = "utils" }
+parser-macros = { path = "parser-macros" }

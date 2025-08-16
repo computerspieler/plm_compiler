@@ -60,6 +60,19 @@ impl Token {
 	}
 }
 
+impl nom::Input for Token {
+	type Item = Token;
+
+	fn input_len(&self) -> usize { todo!() }
+	fn take(&self, _: usize) -> Self { todo!() }
+	fn take_from(&self, _: usize) -> Self { todo!() }
+	fn take_split(&self, _: usize) -> (Self, Self) { todo!() }
+	fn position<P>(&self, _: P) -> Option<usize> where P: Fn { todo!() }
+	fn iter_elements(&self) -> <Self as Input>::Iter { todo!() }
+	fn iter_indices(&self) -> <Self as Input>::IterIndices { todo!() }
+	fn slice_index(&self, _: usize) -> Result<usize, Needed> { todo!() }
+}
+
 #[derive(Clone, Copy, Debug)]
 pub struct Position {
 	pub line: usize,

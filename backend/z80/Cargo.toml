@@ -4,7 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-assembler-common = { path = "../assembler-common" }
+parser-macros = { path = "../../parser-macros" }
+utils = { path = "../../utils" }
 nom = "8.0.0"
 
 [lib]

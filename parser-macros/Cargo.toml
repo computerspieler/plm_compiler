@@ -1,5 +1,5 @@
 [package]
-name = "assembler-common"
+name = "parser-macros"
 version = "0.1.0"
 edition = "2024"
 
@@ -10,6 +10,6 @@ quote = "1.0.40"
 syn = "2.0.101"
 
 [lib]
-name = "assembler_common"
+name = "parser_macros"
 path = "src/lib.rs"
 proc-macro = true

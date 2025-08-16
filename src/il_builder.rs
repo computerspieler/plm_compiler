@@ -52,8 +52,10 @@ extern crate backend;
 
 use std::collections::HashMap;
 use std::collections::VecDeque;
+use std::env;
 
 use crate::ast;
+use crate::ast::Expression;
 use backend::ast::*;
 use backend::typing::TypeCheckable;
 
@@ -127,6 +129,17 @@ impl<InputType: Iterator<Item = ast::Statement> + EOSDetector> BackendConverter<
 		}
 	}
 
+	fn convert_type(op: ast::Type) -> backend::ast::Type {
+		use backend::ast::Type::*;
+		match op {
+			| ast::Type::Data | ast::Type::Byte(_) => Pointer(Box::new(U8)),
+			//TODO: Modify
+			| ast::Type::Address(_) => Pointer(Box::new(U16)),
+			| ast::Type::Void => Void,
+			| ast::Type::Macro => panic!("Impossible"),
+		}
+	}
+
 	fn convert_expression(
 		&self,
 		e: ast::Expression,
@@ -185,22 +198,61 @@ impl<InputType: Iterator<Item = ast::Statement> + EOSDetector> BackendConverter<
 		}
 	}
 
-	fn parse_statement(&mut self, stmt: ast::Statement) -> Result<(), ()> {
+	fn parse_statement(&self, stmt: ast::Statement) -> Result<Vec<Statement<VariableIdx>>, ()> {
 		//self.statement_stack.push_back(Statement::NoOperation);
 		//Err(())
+
+		use backend::ast::Statement::*;
 		match stmt {
 			| ast::Statement::Block(blk) => {
+				let mut output = Vec::new();
+
 				for stmt in blk.into_iter() {
 					match self.parse_statement(stmt) {
-						| Ok(()) => {}
+						| Ok(blk) => {
+							output.extend(blk.into_iter());
+						}
 						| Err(()) => {
 							return Err(());
 						}
 					}
 				}
 
-				return Ok(());
+				return Ok(output);
 			}
+			/*
+				  | ast::Statement::Procedure(args_name, return_type, body) => {
+					  // TODO: Add function name
+					  new_stmt![FunctionDefinition(
+						  "",
+						  Self::convert_type(return_type),
+						  ,
+
+					  )]
+				  }
+			*/
+			| ast::Statement::IfElse(cond, if_blk, else_blk) => {
+				let cond_var = self.convert_expression(ast::Expression::BinaryOp(
+					ast::BinaryOperation::And,
+					Box::new(cond),
+					Box::new(ast::Expression::Constant(0x1)),
+				));
+
+				let if_blk = self.parse_statement(*if_blk);
+				let else_blk = self.parse_statement(*else_blk);
+
+				match (cond_var, if_blk, else_blk) {
+					| (Some(cond_var), Ok(if_blk), Ok(else_blk)) => {
+						// TODO: Phi operator
+						Ok(vec![IfElse(cond_var, if_blk, else_blk)])
+					}
+					| _ => Err(()),
+				}
+			}
+			| ast::Statement::Halt => Ok(vec![Halt]),
+			| ast::Statement::NoOperation => Ok(vec![NoOperation]),
+			| ast::Statement::EnableInterrupt => Ok(vec![EnableInterrupt]),
+			| ast::Statement::DisableInterrupt => Ok(vec![DisableInterrupt]),
 			| _ => {
 				return Err(());
 			}
@@ -226,7 +278,9 @@ impl<InputType: Iterator<Item = ast::Statement> + EOSDetector> Iterator
 			}
 
 			match self.parse_statement(stmt.unwrap()) {
-				| Ok(_) => {}
+				| Ok(output) => {
+					self.statement_queue.extend(output.into_iter());
+				}
 				| Err(_) => {
 					return None;
 				}
@@ -235,7 +289,7 @@ impl<InputType: Iterator<Item = ast::Statement> + EOSDetector> Iterator
 	}
 }
 
-use crate::traits::EOSDetector;
+use utils::EOSDetector;
 impl<InputType: Iterator<Item = ast::Statement> + EOSDetector> EOSDetector
 	for BackendConverter<InputType>
 {

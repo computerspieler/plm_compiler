@@ -11,13 +11,9 @@ fn operand_quote(i: usize, name: Option<&Ident>, _field_type: &Type) -> proc_mac
 	let field_name = name.unwrap_or(&default_name);
 
 	if i > 0 {
-		quote! {
-			print!(", {}", stringify!(#field_name));
-		}
+		quote! { print!(", {}", stringify!(#field_name)); }
 	} else {
-		quote! {
-			print!(" {}", stringify!(#field_name));
-		}
+		quote! { print!(" {}", stringify!(#field_name));  }
 	}
 }
 
@@ -122,11 +118,11 @@ pub fn instruction_parser(input: TokenStream) -> TokenStream {
 				}
 			});
 			quote! {
-				tag_no_case(stringify!(#variant_name))
+				tag(Token::Keyword(stringify!(#variant_name)))
 			}
 		} else {
 			quote! {
-				tag_no_case(stringify!(#variant_name))
+				tag(Token::Keyword(stringify!(#variant_name)))
 			}
 		}
 	});
@@ -138,10 +134,11 @@ pub fn instruction_parser(input: TokenStream) -> TokenStream {
 			) -> nom::IResult<&'a str, &'a str> {
 				use nom::{
 					Parser,
-					bytes::complete::tag_no_case,
+					bytes::complete::tag,
 					branch::alt,
 					sequence::tuple
 				};
+				use utils::token::Token;
 				
 				alt([
 					#(#instructions_parser),*
@@ -209,10 +206,14 @@ pub fn identifier_parser(input: TokenStream) -> TokenStream {
 	});
 
 	let expanded = quote! {
-		impl #name {
-			pub fn parser<'a>(
+		impl<'a> nom::Parser<&'a str> for #name {
+			type Output = #name;
+		    type Error = nom::error::Error<&'a str>;
+
+			fn process<OM: nom::OutputMode>(
+				&mut self,
 				input: &'a str
-			) -> nom::IResult<&'a str, #name> {
+			) -> nom::PResult<OM, &'a str, Self::Output, Self::Error> {
 				use nom::{
 					Parser,
 					bytes::complete::tag_no_case,
@@ -223,7 +224,7 @@ pub fn identifier_parser(input: TokenStream) -> TokenStream {
 				
 				alt([
 					#(#instructions_parser),*
-				]).parse(input)
+				]).process::<OM>(input)
 			}
 		}
 	};
