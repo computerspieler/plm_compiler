@@ -1,4 +1,4 @@
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ByteRegister {
 	A,
 	B,
@@ -9,7 +9,7 @@ pub enum ByteRegister {
 	L,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum WordRegister {
 	AF,
 	BC,
@@ -24,7 +24,7 @@ pub enum WordRegister {
 	SP,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum UndocumentedRegister {
 	IXH,
 	IXL,
@@ -32,7 +32,7 @@ pub enum UndocumentedRegister {
 	IYL,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Operand {
 	Constant(i32),
 	Address(u16),
@@ -49,7 +49,7 @@ pub enum Operand {
 	F,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Condition {
 	Z,
 	NZ,
@@ -61,7 +61,7 @@ pub enum Condition {
 	M,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Instruction {
 	LD(Operand, Operand),
 	PUSH(Operand),
