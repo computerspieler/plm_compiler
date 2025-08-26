@@ -1,14 +1,12 @@
-use plm::ast::*;
-use plm::{parser::Parser, keywords};
-use utils::{EOSDetector, lexer::Lexer};
+use plm::{ast::*, parser::Parser, EOSDetector, lexer::Lexer};
 
 macro_rules! compare_ast {
 	($input: literal, $goal: expr) => {{
-		let mut parser = Parser::new(Lexer::from_string(String::from($input), &keywords::KEYWORDS));
+		let mut parser = Parser::new(Lexer::from_string(String::from($input)));
 		match ($goal) as Option<Vec<Statement>> {
 			| None => {
 				// Consumes the iterator
-				while let Some(_) = parser.next() {}
+				while parser.next().is_some() {}
 				assert!(!parser.reached_eos());
 			}
 			| Some(x) => {
@@ -131,16 +129,6 @@ fn test_invalid_statement1() {
 }
 
 #[test]
-fn test_invalid_statement2() {
-	compare_ast!(";", None)
-}
-
-#[test]
-fn test_invalid_statement3() {
-	compare_ast!(";;;;;", None)
-}
-
-#[test]
 fn test_invalid_token_in_expression0() {
 	compare_ast!("IF arr(80hh) THEN DISABLE;", None)
 }
@@ -205,6 +193,22 @@ fn test_valid_function_call3() {
 #[test]
 fn test_valid_statement0() {
 	compare_ast!("", Some(vec![]))
+}
+
+#[test]
+fn test_valid_statement1() {
+	compare_ast!(";", Some(vec![Statement::NoOperation]));
+}
+
+#[test]
+fn test_valid_statement2() {
+	compare_ast!(";;;;;", Some(vec![
+		Statement::NoOperation,
+		Statement::NoOperation,
+		Statement::NoOperation,
+		Statement::NoOperation,
+		Statement::NoOperation
+	]))
 }
 
 #[test]
@@ -1121,11 +1125,6 @@ fn test_valid_do_case3() {
 			vec![]
 		)])
 	)
-}
-
-#[test]
-fn test_valid_no_op0() {
-	compare_ast!(";", Some(vec![Statement::NoOperation]))
 }
 
 #[test]

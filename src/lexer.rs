@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::fs::File;
 
-pub struct Lexer<'a, KWH: KeywordHandler> {
+pub struct Lexer {
 	input_file: Option<File>,
 	input_string: Option<(Vec<u8>, usize)>,
 	stash: Option<(char, Position)>,
@@ -11,12 +11,11 @@ pub struct Lexer<'a, KWH: KeywordHandler> {
 	macros: Vec<Vec<(Token, Position)>>,
 	running_macro: Option<(usize, usize)>,
 
-	peeked_token: Option<Option<(Token, Position)>>,
-	kw_handler: &'a KWH
+	peeked_token: Option<Option<(Token, Position)>>
 }
 
-impl<'a, KWH: KeywordHandler> Lexer<'a, KWH> {
-	pub fn from_file(f: File, kw_handler: &'a KWH) -> Self {
+impl Lexer {
+	pub fn from_file(f: File) -> Self {
 		Self {
 			input_file: Some(f),
 			input_string: None,
@@ -27,12 +26,11 @@ impl<'a, KWH: KeywordHandler> Lexer<'a, KWH> {
 			macros: Vec::new(),
 			running_macro: None,
 
-			peeked_token: None,
-			kw_handler: kw_handler
+			peeked_token: None
 		}
 	}
 
-	pub fn from_string(str: String, kw_handler: &'a KWH) -> Self {
+	pub fn from_string(str: String) -> Self {
 		Self {
 			input_file: None,
 			input_string: Some((str.into_bytes(), 0)),
@@ -42,8 +40,7 @@ impl<'a, KWH: KeywordHandler> Lexer<'a, KWH> {
 			macros: Vec::new(),
 			running_macro: None,
 
-			peeked_token: None,
-			kw_handler: kw_handler
+			peeked_token: None
 		}
 	}
 
@@ -127,7 +124,7 @@ impl<'a, KWH: KeywordHandler> Lexer<'a, KWH> {
 	}
 
 	pub fn add_macro(&mut self, keyword: String, initial_position: Position, data: String) {
-		let mut lex = Lexer::from_string(data, self.kw_handler);
+		let mut lex = Lexer::from_string(data);
 		lex.copy_macros(&self);
 		lex.cursor_position = initial_position;
 		self.macros_idx.insert(keyword, self.macros.len());
@@ -171,7 +168,7 @@ impl<'a, KWH: KeywordHandler> Lexer<'a, KWH> {
 use std::io::{Error, ErrorKind, Read};
 use std::iter::Iterator;
 
-impl<KWH: KeywordHandler> Iterator for Lexer<'_, KWH> {
+impl Iterator for Lexer {
 	type Item = (Token, Position);
 
 	fn next(&mut self) -> Option<(Token, Position)> {
@@ -206,7 +203,7 @@ impl<KWH: KeywordHandler> Iterator for Lexer<'_, KWH> {
 					if self.launch_macro(&token_str) {
 						return self.next();
 					} else {
-						return Token::from_string(self.kw_handler, initial_pos.unwrap(), token_str);
+						return Token::from_string(initial_pos.unwrap(), token_str);
 					}
 				}
 			}
@@ -228,7 +225,7 @@ impl<KWH: KeywordHandler> Iterator for Lexer<'_, KWH> {
 				if self.launch_macro(&token_str) {
 					return self.next();
 				} else {
-					return Token::from_string(self.kw_handler, initial_pos.unwrap(), token_str);
+					return Token::from_string(initial_pos.unwrap(), token_str);
 				}
 			}
 
@@ -390,8 +387,8 @@ impl<KWH: KeywordHandler> Iterator for Lexer<'_, KWH> {
 
 use crate::token::{print_error, Position, Token};
 
-use crate::{EOSDetector, KeywordHandler};
-impl<KWH: KeywordHandler> EOSDetector for Lexer<'_, KWH> {
+use crate::EOSDetector;
+impl EOSDetector for Lexer {
 	fn reached_eos(&mut self) -> bool {
 		match self.peek() {
 			| Some(_) => false,

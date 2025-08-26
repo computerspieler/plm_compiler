@@ -1,6 +1,6 @@
 use std::{fmt::{self, Formatter}, io::ErrorKind};
 
-use crate::KeywordHandler;
+use crate::keywords::KEYWORDS;
 
 #[derive(Clone, Debug)]
 pub enum Token {
@@ -60,19 +60,6 @@ impl Token {
 	}
 }
 
-impl nom::Input for Token {
-	type Item = Token;
-
-	fn input_len(&self) -> usize { todo!() }
-	fn take(&self, _: usize) -> Self { todo!() }
-	fn take_from(&self, _: usize) -> Self { todo!() }
-	fn take_split(&self, _: usize) -> (Self, Self) { todo!() }
-	fn position<P>(&self, _: P) -> Option<usize> where P: Fn { todo!() }
-	fn iter_elements(&self) -> <Self as Input>::Iter { todo!() }
-	fn iter_indices(&self) -> <Self as Input>::IterIndices { todo!() }
-	fn slice_index(&self, _: usize) -> Result<usize, Needed> { todo!() }
-}
-
 #[derive(Clone, Copy, Debug)]
 pub struct Position {
 	pub line: usize,
@@ -113,12 +100,12 @@ pub fn print_error<T: std::fmt::Debug>(
 }
 
 impl Token {
-	pub fn from_string<Kwh: KeywordHandler>(kw_handler: &Kwh, pos: Position, str: String) -> Option<PositionedToken> {
+	pub fn from_string(pos: Position, str: String) -> Option<PositionedToken> {
 		assert!(str.len() > 0);
 
 		// If it's an identifier
 		if Token::is_alphabetic(str.chars().nth(0).unwrap()) {
-			if let Some(kw) = kw_handler.is_keyword(str.as_str()) {
+			if let Some(kw) = KEYWORDS.iter().find(|kw| **kw == str.as_str()) {
 				return Some((Token::Keyword(kw), pos));
 			}
 

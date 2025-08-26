@@ -3,9 +3,7 @@ use std::env;
 use std::fs::File;
 use std::process::exit;
 
-use utils::{EOSDetector, lexer::Lexer};
-use plm::parser::Parser;
-use plm::{keywords, preprocessor_parser::*};
+use plm::{parser::Parser, EOSDetector, lexer::Lexer, preprocessor_parser::*};
 
 fn show_help_and_die() {
 	println!(concat!(
@@ -89,7 +87,7 @@ fn main() {
 				panic!("Unable to open {}: {}", path, e);
 			}
 			| Ok(file) => {
-				let mut lex = Lexer::from_file(file, &keywords::KEYWORDS);
+				let mut lex = Lexer::from_file(file);
 				let args = parse_compiler_arguments(&mut lex);
 				dbg!(&args);
 

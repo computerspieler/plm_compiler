@@ -1,5 +1,4 @@
-use crate::parser_macros::*;
-use utils::{lexer::Lexer, KeywordHandler, token::Token};
+use crate::{lexer::Lexer, token::Token, parser_macros::*};
 
 #[derive(Debug)]
 pub struct CompilerArguments {
@@ -87,7 +86,7 @@ If set to zero the first availabe page above the ISA is used.",
 	},
 ];
 
-pub fn parse_compiler_arguments<'a, KWH: KeywordHandler>(lex: &mut Lexer<'a, KWH>) -> Option<CompilerArguments> {
+pub fn parse_compiler_arguments(lex: &mut Lexer) -> Option<CompilerArguments> {
 	let mut output = CompilerArguments { program_basis: 0 };
 
 	loop {

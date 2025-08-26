@@ -1,6 +1,4 @@
-use parser_macros::{IdentifierParser, InstructionLister, InstructionParser};
-
-#[derive(Debug, Clone, IdentifierParser)]
+#[derive(Debug, Clone)]
 pub enum ByteRegister {
 	A,
 	B,
@@ -11,22 +9,22 @@ pub enum ByteRegister {
 	L,
 }
 
-#[derive(Debug, Clone, IdentifierParser)]
+#[derive(Debug, Clone)]
 pub enum WordRegister {
 	AF,
 	BC,
 	DE,
 	HL,
-	#[rename("AF'")] AF_,
-	#[rename("BC'")] BC_,
-	#[rename("DE'")] DE_,
-	#[rename("HL'")] HL_,
+	AF_,
+	BC_,
+	DE_,
+	HL_,
 	IX,
 	IY,
 	SP,
 }
 
-#[derive(Debug, Clone, IdentifierParser)]
+#[derive(Debug, Clone)]
 pub enum UndocumentedRegister {
 	IXH,
 	IXL,
@@ -51,7 +49,7 @@ pub enum Operand {
 	F,
 }
 
-#[derive(Debug, Clone, IdentifierParser)]
+#[derive(Debug, Clone)]
 pub enum Condition {
 	Z,
 	NZ,
@@ -63,13 +61,10 @@ pub enum Condition {
 	M,
 }
 
-#[derive(Debug, Clone, InstructionLister, InstructionParser)]
+#[derive(Debug, Clone)]
 pub enum Instruction {
-	#[help("Transfer data from op1 to op0")]
 	LD(Operand, Operand),
-	#[help("Push op0 onto the stack")]
 	PUSH(Operand),
-	#[help("Pop op0 from the stack")]
 	POP(Operand),
 	EX(Operand, Operand),
 	EXX,
@@ -82,42 +77,26 @@ pub enum Instruction {
 	CPD,
 	CPDR,
 
-	#[help("Add data from op1 to op0")]
 	ADD(Operand, Operand),
-	#[help("Add data with the carry from op1 to op0")]
 	ADC(Operand, Operand),
-	#[help("Substract data from op1 to op0")]
 	SUB(Operand),
-	#[help("Substract data with the carry from op1 to op0")]
 	SBC(Operand, Operand),
-	#[help("Apply the AND gate between register A and op0")]
 	AND(Operand),
-	#[help("Apply the OR gate between register A and op0")]
 	OR(Operand),
-	#[help("Apply the XOR gate between register A and op0")]
 	XOR(Operand),
-	#[help("Compare register A and op0")]
 	CP(Operand),
 
-	#[help("Increment op0")]
 	INC(Operand),
-	#[help("Decrement op0")]
 	DEC(Operand),
 
 	DAA,
 	CPL,
 	NEG,
-	#[help("Clear the carry flag")]
 	CCF,
-	#[help("Set the carry flag")]
 	SCF,
-	#[help("Do nothing")]
 	NOP,
-	#[help("Halt the processor")]
 	HALT,
-	#[help("Disable interrupts")]
 	DI,
-	#[help("Enable interrupts")]
 	EI,
 
 	IM(u8),
@@ -137,11 +116,8 @@ pub enum Instruction {
 	RLD,
 	RRD,
 
-	#[help("Test the bit c of op0")]
 	BIT(u8, Operand),
-	#[help("Set the bit c of op0")]
 	SET(u8, Operand),
-	#[help("Clear the bit c of op0")]
 	RES(u8, Operand),
 
 	JP(Option<Condition>, Operand),

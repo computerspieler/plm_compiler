@@ -52,7 +52,6 @@ extern crate backend;
 
 use std::collections::HashMap;
 use std::collections::VecDeque;
-use std::env;
 
 use crate::ast;
 use crate::ast::Expression;
@@ -74,13 +73,13 @@ impl TypeCheckable<Environment> for VariableIdx {
 	}
 }
 
-pub struct BackendConverter<InputType: Iterator<Item = ast::Statement> + EOSDetector> {
+pub struct BackendConverter<InputType: Iterator<Item = ast::Statement>> {
 	input: InputType,
 	statement_queue: VecDeque<Statement<VariableIdx>>,
 	env: Environment,
 }
 
-impl<InputType: Iterator<Item = ast::Statement> + EOSDetector> BackendConverter<InputType> {
+impl<InputType: Iterator<Item = ast::Statement>> BackendConverter<InputType> {
 	pub fn new(input: InputType) -> Self {
 		Self {
 			input: input,
@@ -260,7 +259,7 @@ impl<InputType: Iterator<Item = ast::Statement> + EOSDetector> BackendConverter<
 	}
 }
 
-impl<InputType: Iterator<Item = ast::Statement> + EOSDetector> Iterator
+impl<InputType: Iterator<Item = ast::Statement>> Iterator
 	for BackendConverter<InputType>
 {
 	type Item = Statement<VariableIdx>;
@@ -286,14 +285,5 @@ impl<InputType: Iterator<Item = ast::Statement> + EOSDetector> Iterator
 				}
 			}
 		}
-	}
-}
-
-use utils::EOSDetector;
-impl<InputType: Iterator<Item = ast::Statement> + EOSDetector> EOSDetector
-	for BackendConverter<InputType>
-{
-	fn reached_eos(&mut self) -> bool {
-		self.input.reached_eos() && self.statement_queue.len() == 0
 	}
 }

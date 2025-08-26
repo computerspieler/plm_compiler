@@ -8,7 +8,6 @@ fn show_help_and_die() {
 	println!(concat!(
 		"./z80 [ARGUMENTS] [INPUT FILES]\n",
 		"-h: Show this message\n",
-		"-l: List all the supported instructions\n",
 		"-o [FILE]: Set the output file",
 		"-D NAME VALUE: Define a global variable",
 	));
@@ -43,10 +42,6 @@ fn parse_arguments() -> ParsedArguments {
 					output.output_path = Some(path);
 				}
 			},
-			| "-l" => {
-				z80::instruction::list_instructions();
-				exit(0);
-			}
 			| "-D" => {
 				let first_arg = args.next();
 				let second_arg = args.next();

@@ -1,12 +1,13 @@
-use crate::ast::*;
-use crate::parser_macros::*;
-use utils::{
+use crate::{
+	EOSDetector,
+	ast::*,
+	parser_macros::*,
 	lexer::Lexer,
 	token::{Position, Token}
 };
 
-pub struct Parser<'a, const N: usize> {
-	lexer: Lexer<'a, [&'static str; N]>,
+pub struct Parser {
+	lexer: Lexer,
 	last_label: Option<String>,
 	encountered_error: bool,
 }
@@ -42,8 +43,8 @@ enum OperationType {
 	BinaryOp(BinaryOperation),
 }
 
-impl<'a, const N: usize> Parser<'a, N> {
-	pub fn new(lex: Lexer<'a, [&'static str; N]>) -> Self {
+impl Parser {
+	pub fn new(lex: Lexer) -> Self {
 		Self {
 			lexer: lex,
 			last_label: None,
@@ -506,6 +507,9 @@ impl<'a, const N: usize> Parser<'a, N> {
 	fn parse_statement(&mut self, label: Option<String>) -> Option<Statement> {
 		let tok = self.lexer.peek();
 		if tok.is_none() {
+			if self.lexer.reached_eos() {
+				return Some(Statement::EndOfFile);
+			}
 			return None;
 		}
 
@@ -1208,15 +1212,14 @@ impl<'a, const N: usize> Parser<'a, N> {
 	}
 }
 
-use utils::EOSDetector;
-impl<'a, const N: usize> EOSDetector for Parser<'a, N> {
+impl EOSDetector for Parser {
 	fn reached_eos(&mut self) -> bool {
-		!self.encountered_error && (self.lexer.reached_eos() || !self.lexer.peek().is_none())
+		!self.encountered_error && self.lexer.reached_eos()
 	}
 }
 
 use std::iter::Iterator;
-impl<'a, const N: usize> Iterator for Parser<'a, N> {
+impl Iterator for Parser {
 	type Item = Statement;
 
 	fn next(&mut self) -> Option<Statement> {

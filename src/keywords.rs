@@ -1,5 +1,4 @@
-pub const KEYWORDS_COUNT: usize = 34;
-pub static KEYWORDS: [&'static str; KEYWORDS_COUNT] = [
+pub static KEYWORDS: [&'static str; 34] = [
 	"ADDRESS",
 	"AND",
 	"BASED",
