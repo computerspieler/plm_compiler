@@ -10,11 +10,12 @@ macro_rules! test {
 			$(
 				let $var: $vt = <$vt>::MAX-1;
 			)*
-            let a = Assembler::new(iter::once($inst), false);
+			let inst: Instruction<u8, u16, i32, i8> = $inst;
+            let a = Assembler::new(iter::once(inst.clone()), false);
             let o: Vec<u8> = a.collect();
             let e: Vec<u8> = vec![$($values as u8),+];
-			assert!(o != [], "Invalid output for {:?}: no output", $inst);
-            assert!(o == e, "Invalid output for {:?}: got {:?}, expected {:?}", $inst, o, e);
+			assert!(o != [], "Invalid output for {:?}: no output", &inst);
+            assert!(o == e, "Invalid output for {:?}: got {:?}, expected {:?}", &inst, o, e);
         }
     };
 }
@@ -28,15 +29,16 @@ macro_rules! test_ub {
 			)*
 
             let e: Vec<u8> = vec![$($values as u8),+];
+			let inst: Instruction<u8, u16, i32, i8> = $inst;
 
-            let a = Assembler::new(iter::once($inst), false);
+            let a = Assembler::new(iter::once(inst.clone()), false);
             let o: Vec<u8> = a.collect();
             assert!(o == [], "An undefined instruction has been translated correctly");
 
-			let a = Assembler::new(iter::once($inst), true);
+			let a = Assembler::new(iter::once(inst.clone()), true);
 			let o: Vec<u8> = a.collect();
-			assert!(o != [], "Invalid output for {:?}: no output", $inst);
-			assert!(o == e, "Invalid output for {:?}: got {:?}, expected {:?}", $inst, o, e);
+			assert!(o != [], "Invalid output for {:?}: no output", &inst);
+			assert!(o == e, "Invalid output for {:?}: got {:?}, expected {:?}", &inst, o, e);
         }
     }
 }

@@ -1,14 +1,14 @@
 use crate::instruction::*;
 use std::collections::VecDeque;
 
-pub struct Assembler<InputType: Iterator<Item = Instruction>> {
+pub struct Assembler<InputType: Iterator<Item = Instruction<u8, u16, i32, i8>>> {
 	input: InputType,
 	enable_undocumented_instructions: bool,
 	has_error_occured: bool,
 	queue: VecDeque<u8>,
 }
 
-impl<InputType: Iterator<Item = Instruction>> Assembler<InputType> {
+impl<InputType: Iterator<Item = Instruction<u8, u16, i32, i8>>> Assembler<InputType> {
 	pub fn new(input: InputType, enable_undocumented_instructions: bool) -> Self {
 		Self {
 			input: input,
@@ -109,7 +109,7 @@ impl<InputType: Iterator<Item = Instruction>> Assembler<InputType> {
 		}
 	}
 
-	fn convert_macro_instruction(&self, inst: Instruction) -> Instruction {
+	fn convert_macro_instruction(&self, inst: Instruction<u8, u16, i32, i8>) -> Instruction<u8, u16, i32, i8> {
 		use crate::instruction::ByteRegister::*;
 		use crate::instruction::WordRegister::*;
 		use Instruction::*;
@@ -182,7 +182,7 @@ impl<InputType: Iterator<Item = Instruction>> Assembler<InputType> {
 		}
 	}
 
-	fn convert_undocumented_instruction(&mut self, inst: Instruction) -> bool {
+	fn convert_undocumented_instruction(&mut self, inst: Instruction<u8, u16, i32, i8>) -> bool {
 		use crate::instruction::ByteRegister;
 		use crate::instruction::UndocumentedRegister::*;
 		use crate::instruction::WordRegister::*;
@@ -286,7 +286,7 @@ impl<InputType: Iterator<Item = Instruction>> Assembler<InputType> {
 		}
 	}
 
-	fn convert_instruction(&mut self, inst: Instruction) -> bool {
+	fn convert_instruction(&mut self, inst: Instruction<u8, u16, i32, i8>) -> bool {
 		use crate::instruction::ByteRegister::*;
 		use crate::instruction::WordRegister::*;
 		use Instruction::*;
@@ -621,7 +621,7 @@ impl<InputType: Iterator<Item = Instruction>> Assembler<InputType> {
 	}
 }
 
-impl<InputType: Iterator<Item = Instruction>> Iterator for Assembler<InputType> {
+impl<InputType: Iterator<Item = Instruction<u8, u16, i32, i8>>> Iterator for Assembler<InputType> {
 	type Item = u8;
 
 	fn next(&mut self) -> Option<u8> {

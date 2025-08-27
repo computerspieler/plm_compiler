@@ -33,15 +33,15 @@ pub enum UndocumentedRegister {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum Operand {
-	Constant(i32),
-	Address(u16),
-	Port(u8),
+pub enum Operand<ToU8, Address, Constant, Offset> {
+	Constant(Constant),
+	Address(Address),
+	Port(ToU8),
 	ByteRegister(ByteRegister),
 	WordRegister(WordRegister),
 	PortRegister(ByteRegister),
 	AddressRegister(WordRegister),
-	AddressRegisterWithOffset(WordRegister, i8),
+	AddressRegisterWithOffset(WordRegister, Offset),
 
 	UndocumentedRegister(UndocumentedRegister),
 	I,
@@ -62,11 +62,11 @@ pub enum Condition {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum Instruction {
-	LD(Operand, Operand),
-	PUSH(Operand),
-	POP(Operand),
-	EX(Operand, Operand),
+pub enum Instruction<ToU8, Address, Constant, Offset> {
+	LD(Operand<ToU8, Address, Constant, Offset>, Operand<ToU8, Address, Constant, Offset>),
+	PUSH(Operand<ToU8, Address, Constant, Offset>),
+	POP(Operand<ToU8, Address, Constant, Offset>),
+	EX(Operand<ToU8, Address, Constant, Offset>, Operand<ToU8, Address, Constant, Offset>),
 	EXX,
 	LDI,
 	LDIR,
@@ -77,17 +77,17 @@ pub enum Instruction {
 	CPD,
 	CPDR,
 
-	ADD(Operand, Operand),
-	ADC(Operand, Operand),
-	SUB(Operand),
-	SBC(Operand, Operand),
-	AND(Operand),
-	OR(Operand),
-	XOR(Operand),
-	CP(Operand),
+	ADD(Operand<ToU8, Address, Constant, Offset>, Operand<ToU8, Address, Constant, Offset>),
+	ADC(Operand<ToU8, Address, Constant, Offset>, Operand<ToU8, Address, Constant, Offset>),
+	SUB(Operand<ToU8, Address, Constant, Offset>),
+	SBC(Operand<ToU8, Address, Constant, Offset>, Operand<ToU8, Address, Constant, Offset>),
+	AND(Operand<ToU8, Address, Constant, Offset>),
+	OR(Operand<ToU8, Address, Constant, Offset>),
+	XOR(Operand<ToU8, Address, Constant, Offset>),
+	CP(Operand<ToU8, Address, Constant, Offset>),
 
-	INC(Operand),
-	DEC(Operand),
+	INC(Operand<ToU8, Address, Constant, Offset>),
+	DEC(Operand<ToU8, Address, Constant, Offset>),
 
 	DAA,
 	CPL,
@@ -99,49 +99,49 @@ pub enum Instruction {
 	DI,
 	EI,
 
-	IM(u8),
+	IM(ToU8),
 
 	RLCA,
 	RLA,
 	RRCA,
 	RRA,
-	RLC(Operand),
-	RL(Operand),
-	RRC(Operand),
-	RR(Operand),
-	SLA(Operand),
-	SLL(Operand),
-	SRA(Operand),
-	SRL(Operand),
+	RLC(Operand<ToU8, Address, Constant, Offset>),
+	RL(Operand<ToU8, Address, Constant, Offset>),
+	RRC(Operand<ToU8, Address, Constant, Offset>),
+	RR(Operand<ToU8, Address, Constant, Offset>),
+	SLA(Operand<ToU8, Address, Constant, Offset>),
+	SLL(Operand<ToU8, Address, Constant, Offset>),
+	SRA(Operand<ToU8, Address, Constant, Offset>),
+	SRL(Operand<ToU8, Address, Constant, Offset>),
 	RLD,
 	RRD,
 
-	BIT(u8, Operand),
-	SET(u8, Operand),
-	RES(u8, Operand),
+	BIT(ToU8, Operand<ToU8, Address, Constant, Offset>),
+	SET(ToU8, Operand<ToU8, Address, Constant, Offset>),
+	RES(ToU8, Operand<ToU8, Address, Constant, Offset>),
 
-	JP(Option<Condition>, Operand),
-	JR(Option<Condition>, Operand),
+	JP(Option<Condition>, Operand<ToU8, Address, Constant, Offset>),
+	JR(Option<Condition>, Operand<ToU8, Address, Constant, Offset>),
 
-	DJNZ(i8),
+	DJNZ(Offset),
 
-	CALL(Option<Condition>, Operand),
+	CALL(Option<Condition>, Operand<ToU8, Address, Constant, Offset>),
 	RET(Option<Condition>),
 	RETI,
 	RETN,
-	RST(u8),
+	RST(ToU8),
 
-	IN(Operand, Operand),
+	IN(Operand<ToU8, Address, Constant, Offset>, Operand<ToU8, Address, Constant, Offset>),
 	INI,
 	INIR,
 	IND,
 	INDR,
-	OUT(Operand, Operand),
+	OUT(Operand<ToU8, Address, Constant, Offset>, Operand<ToU8, Address, Constant, Offset>),
 	OUTI,
 	OTIR,
 	OUTD,
 	OTDR,
 
 	/* This is Assembler specific */
-	Binary(Vec<u8>),
+	Binary(Vec<ToU8>),
 }
