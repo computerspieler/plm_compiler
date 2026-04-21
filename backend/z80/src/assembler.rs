@@ -109,76 +109,304 @@ impl<InputType: Iterator<Item = Instruction<u8, u16, i32, i8>>> Assembler<InputT
 		}
 	}
 
-	fn convert_macro_instruction(&self, inst: Instruction<u8, u16, i32, i8>) -> Instruction<u8, u16, i32, i8> {
+	fn get_both_part_word_pair(&self, pair: WordRegister) -> Option<(Operand<u8, u16, i32, i8>, Operand<u8, u16, i32, i8>)> {
+		match pair {
+		WordRegister::AF => None,
+		WordRegister::BC => Some((
+			Operand::ByteRegister(ByteRegister::C),
+			Operand::ByteRegister(ByteRegister::B)
+		)),
+		WordRegister::DE => Some((
+			Operand::ByteRegister(ByteRegister::E),
+			Operand::ByteRegister(ByteRegister::D)
+		)),
+		WordRegister::HL => Some((
+			Operand::ByteRegister(ByteRegister::L),
+			Operand::ByteRegister(ByteRegister::H)
+		)),
+		WordRegister::IX => Some((
+			Operand::UndocumentedRegister(UndocumentedRegister::IXL),
+			Operand::UndocumentedRegister(UndocumentedRegister::IXH)
+		)),
+		WordRegister::IY => Some((
+			Operand::UndocumentedRegister(UndocumentedRegister::IYL),
+			Operand::UndocumentedRegister(UndocumentedRegister::IYH)
+		)),
+
+		WordRegister::SP => None,
+		WordRegister::AF_ => None,
+		WordRegister::BC_ => None,
+		WordRegister::DE_ => None,
+		WordRegister::HL_ => None
+		}
+	}
+
+	fn convert_instruction(&mut self, inst: Instruction<u8, u16, i32, i8>) -> bool {
 		use crate::instruction::ByteRegister::*;
 		use crate::instruction::WordRegister::*;
 		use Instruction::*;
 		use Operand::*;
 
+		macro_rules! parse {
+			($($inst: expr),+) => {{
+				$(
+					if !self.convert_instruction($inst) {
+						return false
+					}
+				)*
+				return true;
+			}};
+		}
+
 		match inst {
-			| LD(arg, AddressRegister(IX)) => LD(arg, AddressRegisterWithOffset(IX, 0)),
-			| LD(arg, AddressRegister(IY)) => LD(arg, AddressRegisterWithOffset(IY, 0)),
-			| LD(AddressRegister(IX), arg) => LD(AddressRegisterWithOffset(IX, 0), arg),
-			| LD(AddressRegister(IY), arg) => LD(AddressRegisterWithOffset(IY, 0), arg),
+			| LD(arg, AddressRegister(IX)) => parse!(
+				LD(arg, AddressRegisterWithOffset(IX, 0))
+			),
+			| LD(arg, AddressRegister(IY)) => parse!(
+				LD(arg, AddressRegisterWithOffset(IY, 0))
+			),
+			| LD(AddressRegister(IX), arg) => parse!(
+				LD(AddressRegisterWithOffset(IX, 0), arg)
+			),
+			| LD(AddressRegister(IY), arg) => parse!(
+				LD(AddressRegisterWithOffset(IY, 0), arg)
+			),
 
-			| ADD(ByteRegister(A), AddressRegister(IX)) => {
+			// Load instruction between memory and word registers
+			| LD(AddressRegisterWithOffset(r, offset), WordRegister(r2)) if offset<127 => {
+				let parts_r2 = self.get_both_part_word_pair(r2);
+				if parts_r2.is_none() {
+					return false;
+				}
+				let (lower_r2, higher_r2) = parts_r2.unwrap();
+				parse!(
+					LD(AddressRegisterWithOffset(r.clone(), offset), lower_r2),
+					LD(AddressRegisterWithOffset(r, offset+1), higher_r2)
+				)
+			},
+			| LD(WordRegister(r), AddressRegisterWithOffset(r2, offset)) if offset<127 => {
+				let parts_r = self.get_both_part_word_pair(r);
+				if parts_r.is_none() {
+					return false;
+				}
+				let (lower_r, higher_r) = parts_r.unwrap();
+
+				parse!(
+					LD(lower_r, AddressRegisterWithOffset(r2.clone(), offset)),
+					LD(higher_r, AddressRegisterWithOffset(r2, offset+1))
+				)
+			},
+			// We need to handle this special case to avoid an integer overflow
+			| LD(AddressRegisterWithOffset(r, offset), WordRegister(r2)) if offset>=127 => {
+				let parts_r2 = self.get_both_part_word_pair(r2);
+				if parts_r2.is_none() {
+					return false;
+				}
+				let (lower_r2, higher_r2) = parts_r2.unwrap();
+				parse!(
+					LD(AddressRegisterWithOffset(r.clone(), offset), lower_r2),
+					INC(WordRegister(r.clone())),
+					LD(AddressRegisterWithOffset(r.clone(), offset), higher_r2),
+					DEC(WordRegister(r))
+				)
+			},
+			| LD(WordRegister(r), AddressRegisterWithOffset(r2, offset)) => {
+				let parts_r = self.get_both_part_word_pair(r);
+				if parts_r.is_none() {
+					return false;
+				}
+				let (lower_r, higher_r) = parts_r.unwrap();
+
+				parse!(
+					LD(lower_r, AddressRegisterWithOffset(r2.clone(), offset)),
+					INC(WordRegister(r2.clone())),
+					LD(higher_r, AddressRegisterWithOffset(r2.clone(), offset)),
+					DEC(WordRegister(r2))
+				)
+			},
+
+			| LD(AddressRegister(r), WordRegister(r2)) => {
+				let parts_r2 = self.get_both_part_word_pair(r2);
+				if parts_r2.is_none() {
+					return false;
+				}
+				let (lower_r2, higher_r2) = parts_r2.unwrap();
+				parse!(
+					LD(AddressRegister(r.clone()), lower_r2),
+					INC(WordRegister(r.clone())),
+					LD(AddressRegister(r.clone()), higher_r2),
+					DEC(WordRegister(r))
+				)
+			},
+			| LD(WordRegister(r), AddressRegister(r2)) => {
+				let parts_r = self.get_both_part_word_pair(r);
+				if parts_r.is_none() {
+					return false;
+				}
+				let (lower_r, higher_r) = parts_r.unwrap();
+
+				parse!(
+					LD(lower_r, AddressRegister(r2.clone())),
+					INC(WordRegister(r2.clone())),
+					LD(higher_r, AddressRegister(r2.clone())),
+					DEC(WordRegister(r2))
+				)
+			},
+
+			// If r1 is SP, then there is a real instruction for that
+			| LD(WordRegister(r1), WordRegister(r2)) if r1 != SP => {
+				let parts_r1 = self.get_both_part_word_pair(r1);
+				if parts_r1.is_none() {
+					return false;
+				}
+				let (lower_r1, higher_r1) = parts_r1.unwrap();
+
+				let parts_r2 = self.get_both_part_word_pair(r2);
+				if parts_r2.is_none() {
+					return false;
+				}
+				let (lower_r2, higher_r2) = parts_r2.unwrap();
+				parse!(
+					LD(higher_r1, higher_r2),
+					LD(lower_r1, lower_r2)
+				)
+			},
+
+			| ADD(ByteRegister(A), AddressRegister(IX)) => parse!(
 				ADD(ByteRegister(A), AddressRegisterWithOffset(IX, 0))
-			}
-			| ADD(ByteRegister(A), AddressRegister(IY)) => {
+			),
+			| ADD(ByteRegister(A), AddressRegister(IY)) => parse!(
 				ADD(ByteRegister(A), AddressRegisterWithOffset(IY, 0))
-			}
-			| ADC(ByteRegister(A), AddressRegister(IX)) => {
+			),
+			| ADC(ByteRegister(A), AddressRegister(IX)) => parse!(
 				ADC(ByteRegister(A), AddressRegisterWithOffset(IX, 0))
-			}
-			| ADC(ByteRegister(A), AddressRegister(IY)) => {
+			),
+			| ADC(ByteRegister(A), AddressRegister(IY)) => parse!(
 				ADC(ByteRegister(A), AddressRegisterWithOffset(IY, 0))
-			}
-			| SBC(ByteRegister(A), AddressRegister(IX)) => {
+			),
+			| SBC(ByteRegister(A), AddressRegister(IX)) => parse!(
 				SBC(ByteRegister(A), AddressRegisterWithOffset(IX, 0))
-			}
-			| SBC(ByteRegister(A), AddressRegister(IY)) => {
+			),
+			| SBC(ByteRegister(A), AddressRegister(IY)) => parse!(
 				SBC(ByteRegister(A), AddressRegisterWithOffset(IY, 0))
-			}
-			| SUB(AddressRegister(IX)) => SUB(AddressRegisterWithOffset(IX, 0)),
-			| SUB(AddressRegister(IY)) => SUB(AddressRegisterWithOffset(IY, 0)),
+			),
+			| SUB(AddressRegister(IX)) => parse!(SUB(AddressRegisterWithOffset(IX, 0))),
+			| SUB(AddressRegister(IY)) => parse!(SUB(AddressRegisterWithOffset(IY, 0))),
 
-			| AND(AddressRegister(IX)) => AND(AddressRegisterWithOffset(IX, 0)),
-			| AND(AddressRegister(IY)) => AND(AddressRegisterWithOffset(IY, 0)),
-			| XOR(AddressRegister(IX)) => XOR(AddressRegisterWithOffset(IX, 0)),
-			| XOR(AddressRegister(IY)) => XOR(AddressRegisterWithOffset(IY, 0)),
-			| OR(AddressRegister(IX)) => OR(AddressRegisterWithOffset(IX, 0)),
-			| OR(AddressRegister(IY)) => OR(AddressRegisterWithOffset(IY, 0)),
-			| CP(AddressRegister(IX)) => CP(AddressRegisterWithOffset(IX, 0)),
-			| CP(AddressRegister(IY)) => CP(AddressRegisterWithOffset(IY, 0)),
-			| INC(AddressRegister(IX)) => INC(AddressRegisterWithOffset(IX, 0)),
-			| INC(AddressRegister(IY)) => INC(AddressRegisterWithOffset(IY, 0)),
-			| DEC(AddressRegister(IX)) => DEC(AddressRegisterWithOffset(IX, 0)),
-			| DEC(AddressRegister(IY)) => DEC(AddressRegisterWithOffset(IY, 0)),
-			| RLC(AddressRegister(IX)) => RLC(AddressRegisterWithOffset(IX, 0)),
-			| RLC(AddressRegister(IY)) => RLC(AddressRegisterWithOffset(IY, 0)),
-			| RL(AddressRegister(IX)) => RL(AddressRegisterWithOffset(IX, 0)),
-			| RL(AddressRegister(IY)) => RL(AddressRegisterWithOffset(IY, 0)),
-			| SRA(AddressRegister(IX)) => SRA(AddressRegisterWithOffset(IX, 0)),
-			| SRA(AddressRegister(IY)) => SRA(AddressRegisterWithOffset(IY, 0)),
-			| RRC(AddressRegister(IX)) => RRC(AddressRegisterWithOffset(IX, 0)),
-			| RRC(AddressRegister(IY)) => RRC(AddressRegisterWithOffset(IY, 0)),
-			| RR(AddressRegister(IX)) => RR(AddressRegisterWithOffset(IX, 0)),
-			| RR(AddressRegister(IY)) => RR(AddressRegisterWithOffset(IY, 0)),
-			| SLA(AddressRegister(IX)) => SLA(AddressRegisterWithOffset(IX, 0)),
-			| SLA(AddressRegister(IY)) => SLA(AddressRegisterWithOffset(IY, 0)),
-			| SLL(AddressRegister(IX)) => SLL(AddressRegisterWithOffset(IX, 0)),
-			| SLL(AddressRegister(IY)) => SLL(AddressRegisterWithOffset(IY, 0)),
-			| SRL(AddressRegister(IX)) => SRL(AddressRegisterWithOffset(IX, 0)),
-			| SRL(AddressRegister(IY)) => SRL(AddressRegisterWithOffset(IY, 0)),
+			| AND(AddressRegister(IX)) => parse!(AND(AddressRegisterWithOffset(IX, 0))),
+			| AND(AddressRegister(IY)) => parse!(AND(AddressRegisterWithOffset(IY, 0))),
+			| XOR(AddressRegister(IX)) => parse!(XOR(AddressRegisterWithOffset(IX, 0))),
+			| XOR(AddressRegister(IY)) => parse!(XOR(AddressRegisterWithOffset(IY, 0))),
+			| OR(AddressRegister(IX)) => parse!(OR(AddressRegisterWithOffset(IX, 0))),
+			| OR(AddressRegister(IY)) => parse!(OR(AddressRegisterWithOffset(IY, 0))),
+			| CP(AddressRegister(IX)) => parse!(CP(AddressRegisterWithOffset(IX, 0))),
+			| CP(AddressRegister(IY)) => parse!(CP(AddressRegisterWithOffset(IY, 0))),
+			| INC(AddressRegister(IX)) => parse!(INC(AddressRegisterWithOffset(IX, 0))),
+			| INC(AddressRegister(IY)) => parse!(INC(AddressRegisterWithOffset(IY, 0))),
+			| DEC(AddressRegister(IX)) => parse!(DEC(AddressRegisterWithOffset(IX, 0))),
+			| DEC(AddressRegister(IY)) => parse!(DEC(AddressRegisterWithOffset(IY, 0))),
+			| RLC(AddressRegister(IX)) => parse!(RLC(AddressRegisterWithOffset(IX, 0))),
+			| RLC(AddressRegister(IY)) => parse!(RLC(AddressRegisterWithOffset(IY, 0))),
+			| RL(AddressRegister(IX)) => parse!(RL(AddressRegisterWithOffset(IX, 0))),
+			| RL(AddressRegister(IY)) => parse!(RL(AddressRegisterWithOffset(IY, 0))),
+			| SRA(AddressRegister(IX)) => parse!(SRA(AddressRegisterWithOffset(IX, 0))),
+			| SRA(AddressRegister(IY)) => parse!(SRA(AddressRegisterWithOffset(IY, 0))),
+			| RRC(AddressRegister(IX)) => parse!(RRC(AddressRegisterWithOffset(IX, 0))),
+			| RRC(AddressRegister(IY)) => parse!(RRC(AddressRegisterWithOffset(IY, 0))),
+			| RR(AddressRegister(IX)) => parse!(RR(AddressRegisterWithOffset(IX, 0))),
+			| RR(AddressRegister(IY)) => parse!(RR(AddressRegisterWithOffset(IY, 0))),
+			| SLA(AddressRegister(IX)) => parse!(SLA(AddressRegisterWithOffset(IX, 0))),
+			| SLA(AddressRegister(IY)) => parse!(SLA(AddressRegisterWithOffset(IY, 0))),
+			| SLL(AddressRegister(IX)) => parse!(SLL(AddressRegisterWithOffset(IX, 0))),
+			| SLL(AddressRegister(IY)) => parse!(SLL(AddressRegisterWithOffset(IY, 0))),
+			| SRL(AddressRegister(IX)) => parse!(SRL(AddressRegisterWithOffset(IX, 0))),
+			| SRL(AddressRegister(IY)) => parse!(SRL(AddressRegisterWithOffset(IY, 0))),
 
-			| BIT(b, AddressRegister(IX)) => BIT(b, AddressRegisterWithOffset(IX, 0)),
-			| BIT(b, AddressRegister(IY)) => BIT(b, AddressRegisterWithOffset(IY, 0)),
-			| RES(b, AddressRegister(IX)) => RES(b, AddressRegisterWithOffset(IX, 0)),
-			| RES(b, AddressRegister(IY)) => RES(b, AddressRegisterWithOffset(IY, 0)),
-			| SET(b, AddressRegister(IX)) => SET(b, AddressRegisterWithOffset(IX, 0)),
-			| SET(b, AddressRegister(IY)) => SET(b, AddressRegisterWithOffset(IY, 0)),
+			| BIT(b, AddressRegister(IX)) => parse!(BIT(b, AddressRegisterWithOffset(IX, 0))),
+			| BIT(b, AddressRegister(IY)) => parse!(BIT(b, AddressRegisterWithOffset(IY, 0))),
+			| RES(b, AddressRegister(IX)) => parse!(RES(b, AddressRegisterWithOffset(IX, 0))),
+			| RES(b, AddressRegister(IY)) => parse!(RES(b, AddressRegisterWithOffset(IY, 0))),
+			| SET(b, AddressRegister(IX)) => parse!(SET(b, AddressRegisterWithOffset(IX, 0))),
+			| SET(b, AddressRegister(IY)) => parse!(SET(b, AddressRegisterWithOffset(IY, 0))),
 
-			| _ => inst,
+			| RL(WordRegister(r)) => {
+				let parts_r = self.get_both_part_word_pair(r);
+				if parts_r.is_none() {
+					return false;
+				}
+				let (lower_r, higher_r) = parts_r.unwrap();
+
+				parse!(
+					RL(lower_r),
+					RL(higher_r)
+				)
+			},
+			// SLA shifts the content of a register one bit to the left
+			// which is equivalent to adding a register to itself
+			| SLA(WordRegister(HL)) => parse!(ADD(WordRegister(HL), WordRegister(HL))),
+			| SLA(WordRegister(r)) => {
+				let parts_r = self.get_both_part_word_pair(r);
+				if parts_r.is_none() {
+					return false;
+				}
+				let (lower_r, higher_r) = parts_r.unwrap();
+
+				parse!(
+					SLA(lower_r),
+					RL(higher_r)
+				)
+			},
+			| SLL(WordRegister(r)) => {
+				let parts_r = self.get_both_part_word_pair(r);
+				if parts_r.is_none() {
+					return false;
+				}
+				let (lower_r, higher_r) = parts_r.unwrap();
+
+				parse!(
+					SLL(lower_r),
+					RL(higher_r)
+				)
+			},
+
+			| RR(WordRegister(r)) => {
+				let parts_r = self.get_both_part_word_pair(r);
+				if parts_r.is_none() {
+					return false;
+				}
+				let (lower_r, higher_r) = parts_r.unwrap();
+
+				parse!(
+					RR(higher_r),
+					RR(lower_r)
+				)
+			},
+			| SRA(WordRegister(r)) => {
+				let parts_r = self.get_both_part_word_pair(r);
+				if parts_r.is_none() {
+					return false;
+				}
+				let (lower_r, higher_r) = parts_r.unwrap();
+
+				parse!(
+					SRA(higher_r),
+					RR(lower_r)
+				)
+			},
+			| SRL(WordRegister(r)) => {
+				let parts_r = self.get_both_part_word_pair(r);
+				if parts_r.is_none() {
+					return false;
+				}
+				let (lower_r, higher_r) = parts_r.unwrap();
+
+				parse!(
+					SRL(higher_r),
+					RR(lower_r)
+				)
+			},
+
+			| _ => self.convert_real_instruction(inst),
 		}
 	}
 
@@ -286,20 +514,19 @@ impl<InputType: Iterator<Item = Instruction<u8, u16, i32, i8>>> Assembler<InputT
 		}
 	}
 
-	fn convert_instruction(&mut self, inst: Instruction<u8, u16, i32, i8>) -> bool {
+	fn convert_real_instruction(&mut self, inst: Instruction<u8, u16, i32, i8>) -> bool {
 		use crate::instruction::ByteRegister::*;
 		use crate::instruction::WordRegister::*;
 		use Instruction::*;
 		use Operand::*;
 
 		macro_rules! b {
-		[$($e:expr),*] => {{
-			$(self.queue.push_back(($e) as u8);)*
-			return true;
-		}};
-	}
+			[$($e:expr),*] => {{
+				$(self.queue.push_back(($e) as u8);)*
+				return true;
+			}};
+		}
 
-		let inst = self.convert_macro_instruction(inst);
 		match inst {
 			| Binary(data) => {
 				self.queue.extend(data);
