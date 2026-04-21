@@ -21,6 +21,24 @@ macro_rules! test {
             }
         }
     };
+
+    ($test_name:ident, $code:expr, ($expected_error: expr)) => {
+        #[test]
+        fn $test_name() {
+            match parser::parse($code) {
+            Err(e) => {
+                if e.code != ($expected_error) {
+                    eprintln!("Received error: {}\nWe expected this error: {}", e, ($expected_error));
+                    assert!(false);
+                }
+            }
+            Ok((leftovers, output)) => {
+                println!("Worked, when it should not: {}", leftovers);
+                assert!(false);
+            }
+            }
+        }
+    };
 }
 
 test!(test_single_instruction,
@@ -63,6 +81,20 @@ test!(test_comment,
 
 test!(test_comment_with_spaces,
     "LDa,B  ;gfsgdfsfd   s  \nOUT(c),d",
+    [
+        Instruction::LD(
+            Operand::ByteRegister(ByteRegister::A),
+            Operand::ByteRegister(ByteRegister::B)
+        ),
+        Instruction::OUT(
+            Operand::PortRegister(ByteRegister::C),
+            Operand::ByteRegister(ByteRegister::D)
+        )
+    ]
+);
+
+test!(test_with_spaces,
+    " LD a,B  \n  OUT(c) , d\n",
     [
         Instruction::LD(
             Operand::ByteRegister(ByteRegister::A),

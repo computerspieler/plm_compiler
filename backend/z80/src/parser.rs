@@ -1,4 +1,4 @@
-use nom::{branch::alt, bytes::complete::{tag_no_case, take_until}, character::{complete::{char, multispace0}, digit1}, combinator::{map, opt}, multi::fold_many0, sequence::{delimited, terminated}, IResult, Parser};
+use nom::{IResult, Parser, branch::alt, bytes::complete::{tag_no_case, take_until}, character::{complete::{char, multispace0}, digit1}, combinator::{map, opt}, multi::fold_many0, sequence::{delimited, terminated}};
 
 use crate::instruction::{ByteRegister, Condition, Instruction, Operand, UndocumentedRegister, WordRegister};
 
@@ -59,18 +59,25 @@ pub enum Expr {
 }
 
 fn parse_expr(text: &str) -> IResult<&str, Expr> {
-    alt((
-        map(digit1(), |x: &str| Expr::Constant(x.parse().unwrap())),
-    )).parse(text)
+    map(
+        (
+            multispace0,
+            alt((
+                map(digit1(), |x: &str| Expr::Constant(x.parse().unwrap())),
+            )),
+            multispace0,
+        ),
+        |x| x.1
+    ).parse(text)
 }
 
-fn parse_operand(is_expected_to_be_port: bool)
+fn parse_operand_main(is_expected_to_be_port: bool)
     -> impl Fn(&str) -> IResult<&str, Operand<Expr, Expr, Expr, Expr>>
 {
     return move |text| {
         alt((
             delimited(
-                char('('),
+                (char('('), multispace0),
                 alt((
                     map(
                         parse_byte_register,
@@ -81,7 +88,7 @@ fn parse_operand(is_expected_to_be_port: bool)
                         |x| Operand::AddressRegister(x)
                     ),
                     map(
-                        (parse_word_register, char('+'), parse_expr),
+                        (parse_word_register, (multispace0, char('+')), parse_expr),
                         |x| Operand::AddressRegisterWithOffset(x.0, x.2)
                     ),
                     map(
@@ -95,7 +102,7 @@ fn parse_operand(is_expected_to_be_port: bool)
                         }
                     )
                 )),
-                char(')')
+                (multispace0, char(')'))
             ),
             map(
                 parse_undocumented_register,
@@ -109,6 +116,18 @@ fn parse_operand(is_expected_to_be_port: bool)
             map(parse_expr, |x| Operand::Constant(x))
         )).parse(text)
     }
+}
+
+
+fn parse_operand(is_expected_to_be_port: bool)
+    -> impl Fn(&str) -> IResult<&str, Operand<Expr, Expr, Expr, Expr>>
+{
+    move |text|
+        delimited(
+            multispace0,
+            parse_operand_main(is_expected_to_be_port),
+            multispace0
+        ).parse(text)
 }
 
 fn parse_instruction(text: &str) -> IResult<&str, Instruction<Expr, Expr, Expr, Expr>> {
@@ -399,7 +418,8 @@ fn parse_instruction(text: &str) -> IResult<&str, Instruction<Expr, Expr, Expr, 
 }
 
 fn parse_line(text: &str) -> IResult<&str, Instruction<Expr, Expr, Expr, Expr>> {
-    terminated(
+    delimited(
+        multispace0,
         parse_instruction,
         (multispace0, opt((char(';'), take_until("\n"))), opt(char('\n')))
     ).parse(text)
