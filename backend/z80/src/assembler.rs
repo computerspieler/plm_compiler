@@ -3,15 +3,20 @@ use std::collections::VecDeque;
 
 pub struct Assembler<InputType: Iterator<Item = Instruction<u8, u16, i32, i8>>> {
 	input: InputType,
+	enable_macro_instructions: bool,
 	enable_undocumented_instructions: bool,
 	has_error_occured: bool,
 	queue: VecDeque<u8>,
 }
 
 impl<InputType: Iterator<Item = Instruction<u8, u16, i32, i8>>> Assembler<InputType> {
-	pub fn new(input: InputType, enable_undocumented_instructions: bool) -> Self {
+	pub fn new(input: InputType,
+		enable_macro_instructions: bool,
+		enable_undocumented_instructions: bool
+	) -> Self {
 		Self {
 			input: input,
+			enable_macro_instructions: enable_macro_instructions,
 			enable_undocumented_instructions: enable_undocumented_instructions,
 			has_error_occured: false,
 			queue: VecDeque::with_capacity(4),
@@ -156,6 +161,10 @@ impl<InputType: Iterator<Item = Instruction<u8, u16, i32, i8>>> Assembler<InputT
 				)*
 				return true;
 			}};
+		}
+
+		if !self.enable_macro_instructions {
+			return self.convert_real_instruction(inst);
 		}
 
 		match inst {
@@ -845,6 +854,11 @@ impl<InputType: Iterator<Item = Instruction<u8, u16, i32, i8>>> Assembler<InputT
 				return false;
 			}
 		}
+	}
+
+	pub fn clear_and_collect_into(&mut self, collection: &mut Vec<u8>) {
+		collection.clear();
+		collection.extend(self);
 	}
 }
 
