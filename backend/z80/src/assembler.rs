@@ -264,13 +264,13 @@ impl<InputType: Iterator<Item = Instruction<u8, u16, i32, i8>>> Assembler<InputT
 				)
 			},
 
-			// If r1 is SP, then there is a real instruction for that
-			| LD(WordRegister(r1), WordRegister(r2)) if r1 != SP => {
-				let parts_r1 = get_both_part_word_pair(r1);
-				if parts_r1.is_none() {
+			// If r is SP, then there is a real instruction for that
+			| LD(WordRegister(r), WordRegister(r2)) if r != SP => {
+				let parts_r = get_both_part_word_pair(r);
+				if parts_r.is_none() {
 					return false;
 				}
-				let (lower_r1, higher_r1) = parts_r1.unwrap();
+				let (lower_r, higher_r) = parts_r.unwrap();
 
 				let parts_r2 = get_both_part_word_pair(r2);
 				if parts_r2.is_none() {
@@ -278,8 +278,8 @@ impl<InputType: Iterator<Item = Instruction<u8, u16, i32, i8>>> Assembler<InputT
 				}
 				let (lower_r2, higher_r2) = parts_r2.unwrap();
 				parse!(
-					LD(higher_r1, higher_r2),
-					LD(lower_r1, lower_r2)
+					LD(higher_r, higher_r2),
+					LD(lower_r, lower_r2)
 				)
 			},
 
